@@ -212,15 +212,16 @@ export class LocalProductListComponent implements OnInit {
     this.returnFormDetail = false;
     this.getCoordinates();
     setTimeout(() => {
-      if (this.coordinatesLocation) {
+      // if (this.coordinatesLocation) {
         this.isLoading = true;
         this.sortByLocation = true;
         sessionStorage.setItem('sort', 'location');
         this.sortBy = sessionStorage.getItem('sort');
         this.mapSidebarService.orderDataByLocation(this.coordinatesLocation);
-      } else {
-        alert('There is a problem with the coordinates');
-      }
+      // } 
+      // else {
+      //   console.log('There is a problem with the coordinates');
+      // }
     }, 2000);
   }
 
