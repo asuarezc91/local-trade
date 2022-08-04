@@ -30,6 +30,13 @@ export class MapSidebarService {
   private formDetailPage = new BehaviorSubject<boolean>(false);
   formDetailPage$ = this.formDetailPage.asObservable();
 
+  private requiredUserLocation = new Subject<boolean>();
+  requiredUserLocation$ = this.requiredUserLocation.asObservable();
+
+
+  private isLoadingLogo = new Subject<boolean>();
+  isLoadingLogo$ = this.isLoadingLogo.asObservable();
+
   constructor() { }
 
   filtersToMap(data): void {
@@ -58,6 +65,13 @@ export class MapSidebarService {
     this.dataToLocalProductLayer.next(data);
   }
 
+  requestUserLocation(data): void {
+    this.requiredUserLocation.next(data);
+  }
+
+  startIsLoadingLogo(data): void {
+    this.isLoadingLogo.next(data);
+  }
 }
 
 

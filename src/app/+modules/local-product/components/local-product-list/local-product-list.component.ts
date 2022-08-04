@@ -99,6 +99,10 @@ export class LocalProductListComponent implements OnInit {
     if (formFilter && this.formDetailPage) {
       this.localForm.controls['shopping'].setValue(formFilter[0]);
     }
+
+    this.mapSidebarService.isLoadingLogo$.subscribe(data => {
+      this.isLoading = true; 
+    })
   }
 
   getDataShops(): void {
@@ -185,7 +189,6 @@ export class LocalProductListComponent implements OnInit {
 
   onSubmit(): void {
     const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
-    debugger;
     if (userLatLon || this.sortBy === 'alpha') {
       this.isLoading = true;
     }
@@ -214,49 +217,51 @@ export class LocalProductListComponent implements OnInit {
     this.orderAlphaOption.checked = false;
     this.orderLocationOption.checked = true;
     this.returnFormDetail = false;
-    this.getCoordinates();
-    setTimeout(() => {
-      // if (this.coordinatesLocation) {
-      const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
-      if (userLatLon) {
-        this.isLoading = true;
-      }
+    //this.getCoordinates();
+    // setTimeout(() => {
+    // if (this.coordinatesLocation) {
+    const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
+    if (userLatLon) {
+      this.isLoading = true;
+      this.mapSidebarService.orderDataByLocation(userLatLon);
       this.sortByLocation = true;
       sessionStorage.setItem('sort', 'location');
       this.sortBy = sessionStorage.getItem('sort');
-      this.mapSidebarService.orderDataByLocation(this.coordinatesLocation);
-      // } 
-      // else {
-      //   console.log('There is a problem with the coordinates');
-      // }
-    }, 2000);
+    } else {
+      this.mapSidebarService.requestUserLocation(true);
+    }
+    // } 
+    // else {
+    //   console.log('There is a problem with the coordinates');
+    // }
+    // }, 2000);
   }
 
-  getCoordinates(): void {
-    const options = {
-      enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 0
-    };
-    let coordinates;
-    function success(pos): void {
-      const crd = pos.coords;
-      coordinates = {
-        latitude: crd.latitude,
-        longitude: crd.longitude
-      };
-    };
+  // getCoordinates(): void {
+  //   const options = {
+  //     enableHighAccuracy: true,
+  //     timeout: 5000,
+  //     maximumAge: 0
+  //   };
+  //   let coordinates;
+  //   function success(pos): void {
+  //     const crd = pos.coords;
+  //     coordinates = {
+  //       latitude: crd.latitude,
+  //       longitude: crd.longitude
+  //     };
+  //   };
 
-    function error(err): void {
-      console.warn('ERROR(' + err.code + '): ' + err.message);
-    };
-    navigator.geolocation.getCurrentPosition(success, error, options);
-    setTimeout(() => {
-      if (coordinates) {
-        this.coordinatesLocation = coordinates;
-      }
-    }, 500);
-  }
+  //   function error(err): void {
+  //     console.warn('ERROR(' + err.code + '): ' + err.message);
+  //   };
+  //   navigator.geolocation.getCurrentPosition(success, error, options);
+  //   setTimeout(() => {
+  //     if (coordinates) {
+  //       this.coordinatesLocation = coordinates;
+  //     }
+  //   }, 500);
+  // }
 
   // orderBy(event): void {
 
@@ -301,13 +306,19 @@ export class LocalProductListComponent implements OnInit {
 
 
   openDialog(item): void {
-    if (this.coordinatesLocation) {
-      this.openMapDialog(this.coordinatesLocation, item);
+    // if (this.coordinatesLocation) {
+    //   this.openMapDialog(this.coordinatesLocation, item);
+    // } else {
+    //   this.getCoordinates();
+    //   setTimeout(() => {
+    //     this.openMapDialog(this.coordinatesLocation, item);
+    //   }, 500);
+    // }
+    const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
+    if (userLatLon) {
+      this.openMapDialog(userLatLon, item);
     } else {
-      this.getCoordinates();
-      setTimeout(() => {
-        this.openMapDialog(this.coordinatesLocation, item);
-      }, 500);
+      alert('You need allow the coordinates position')
     }
   }
 

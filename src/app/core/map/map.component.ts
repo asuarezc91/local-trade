@@ -129,19 +129,33 @@ export class MapComponent implements OnInit, OnDestroy {
 
     view.ui.add(locateWidget, "top-left");
 
-    locateWidget.on("locate", function (locateEvent) {
-      console.log('ON WITHOUT VIEW THEN');
-      const userUbication = { latitude: locateEvent.position.coords.latitude, longitude: locateEvent.position.coords.longitude };
-      sessionStorage.setItem('userUbication', JSON.stringify(userUbication));
-    });
+    // locateWidget.on("locate", function (locateEvent) {
+    //   console.log('no button');
+    //   const userUbication = { latitude: locateEvent.position.coords.latitude, longitude: locateEvent.position.coords.longitude };
+    //   sessionStorage.setItem('userUbication', JSON.stringify(userUbication));
+    // });
 
     view.when(function () {
       locateWidget.locate().then(function (pos) {
+        console.log('view when');
         const userUbication = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
         sessionStorage.setItem('userUbication', JSON.stringify(userUbication));
       });
     });
 
+
+    this.MapSidebarService.requiredUserLocation$.subscribe(data => {
+      locateWidget.locate().then(function (pos) {
+        console.log('view when filtersToMapChanges');
+        const userUbication = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+        sessionStorage.setItem('userUbication', JSON.stringify(userUbication));
+        sessionStorage.setItem('sort', 'location');
+      });
+      setTimeout(() => {
+        this.MapSidebarService.startIsLoadingLogo('');
+        this.MapSidebarService.orderDataByLocation('');
+      }, 1000);
+    });
 
     this.view = view;
     return this.view.when();
@@ -156,7 +170,6 @@ export class MapComponent implements OnInit, OnDestroy {
     // this.SidebarService.sidebarView$.subscribe(data => {
     //   this.changeLayer(data);
     // });
-
 
     config.assetsPath = 'assets/';
     const layer = 'local';  //local layer by default but we need change this and do dinamically
@@ -260,7 +273,6 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   orderByLocation(): void {
-
     // https://www.npmjs.com/package/@arcgis/webpack-plugin
 
     //webpack-plugin
@@ -270,64 +282,64 @@ export class MapComponent implements OnInit, OnDestroy {
       const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
 
 
-      if (userLatLon){
-      const geometrySrv = geometryService;
-      const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer';
+      if (userLatLon) {
+        const geometrySrv = geometryService;
+        const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer';
 
-      const newShopping = this.shops.map(shop => {
-        const myPromise = new Promise((resolve, reject) => {
-          // setTimeout(() => {
-          // const testPointUserInTazacorte: Point = new Point({
-          //   latitude: 28.65194343028121,
-          //   longitude: -17.94569064538474
-          // });
+        const newShopping = this.shops.map(shop => {
+          const myPromise = new Promise((resolve, reject) => {
+            // setTimeout(() => {
+            // const testPointUserInTazacorte: Point = new Point({
+            //   latitude: 28.65194343028121,
+            //   longitude: -17.94569064538474
+            // });
 
-          const testPointUserInTazacorte: Point = new Point(userLatLon);
+            const testPointUserInTazacorte: Point = new Point(userLatLon);
 
-          if (!this.ubicationUserLayer) {
-            const graphicUbication = new Graphic({  // graphic with line geometry
-              geometry: testPointUserInTazacorte, // set geometry here
-              // symbol: new SimpleLineSymbol({...}) // set symbol here
+            if (!this.ubicationUserLayer) {
+              const graphicUbication = new Graphic({  // graphic with line geometry
+                geometry: testPointUserInTazacorte, // set geometry here
+                // symbol: new SimpleLineSymbol({...}) // set symbol here
+              });
+              const fields = [];
+              this.ubicationUserLayer = new FeatureLayer({
+                fields,
+                objectIdField: "ObjectID",
+                geometryType: "point",
+                spatialReference: { wkid: 4326 },
+                source: [graphicUbication],
+                //popupTemplate: pTemplate,
+                //renderer: uvRenderer 
+              });
+              this.myMap.add(this.ubicationUserLayer);
+            }
+
+            const distParams = new DistanceParameters();
+            //distParams.geometry1 = locationUserPoint;
+            distParams.geometry1 = testPointUserInTazacorte;
+            distParams.distanceUnit = 'kilometers';
+            distParams.geodesic = true;
+            let shopUbication = new Point({
+              latitude: shop.geometry.latitude,
+              longitude: shop.geometry.longitude
             });
-            const fields = [];
-            this.ubicationUserLayer = new FeatureLayer({
-              fields,
-              objectIdField: "ObjectID",
-              geometryType: "point",
-              spatialReference: { wkid: 4326 },
-              source: [graphicUbication],
-              //popupTemplate: pTemplate,
-              //renderer: uvRenderer 
-            });
-            this.myMap.add(this.ubicationUserLayer);
-          }
-
-          const distParams = new DistanceParameters();
-          //distParams.geometry1 = locationUserPoint;
-          distParams.geometry1 = testPointUserInTazacorte;
-          distParams.distanceUnit = 'kilometers';
-          distParams.geodesic = true;
-          let shopUbication = new Point({
-            latitude: shop.geometry.latitude,
-            longitude: shop.geometry.longitude
+            distParams.geometry2 = shopUbication;
+            resolve(geometrySrv.distance(url, distParams));
+            // }, 1000);
           });
-          distParams.geometry2 = shopUbication;
-          resolve(geometrySrv.distance(url, distParams));
-          // }, 1000);
+          myPromise.then((value: number) => {
+            shop.attributes['distance'] = value.toFixed(2);
+          });
+          return shop;
         });
-        myPromise.then((value: number) => {
-          shop.attributes['distance'] = value.toFixed(2);
-        });
-        return shop;
-      });
-      //TO CONTROL THE PROBLEM WITH ASYNC DATA DISTANCE ************
-      setTimeout(() => {
-        this.MapSidebarService.sendDataFromMap(newShopping);
-      }, 2000);
-    }
-    else {
-      alert('You need allow the user ubication');
-    }
+        //TO CONTROL THE PROBLEM WITH ASYNC DATA DISTANCE ************
+        setTimeout(() => {
+          this.MapSidebarService.sendDataFromMap(newShopping);
+        }, 2000);
+      }
+      else {
+        alert('You need allow the user ubication');
+      }
     });
   }
 
