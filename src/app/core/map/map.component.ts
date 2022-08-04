@@ -278,6 +278,8 @@ export class MapComponent implements OnInit, OnDestroy {
     //webpack-plugin
 
     this.MapSidebarService.orderByLocationChanges$.subscribe(async data => {
+      console.log('MAAAAAAAAAAAAAAAAAAP')
+      debugger;
       console.log('sessionStorage.getItem', JSON.parse(sessionStorage.getItem('userUbication')));
       const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
 
@@ -334,6 +336,7 @@ export class MapComponent implements OnInit, OnDestroy {
         });
         //TO CONTROL THE PROBLEM WITH ASYNC DATA DISTANCE ************
         setTimeout(() => {
+          console.log('settime')
           this.MapSidebarService.sendDataFromMap(newShopping);
         }, 2000);
       }

@@ -107,6 +107,7 @@ export class LocalProductListComponent implements OnInit {
 
   getDataShops(): void {
     this.mapSidebarService.dataToLocalProductLayer$.subscribe(async data => {
+      console.log('FUUUUUUUUUARK SALTA 2 VECES! CUANDO BUSCAMOS POR TEXTO!!', data);
       this.originalData = data;
       const localSPage = localStorage.getItem('page');
       if (localSPage && this.formDetailPage) {
@@ -121,6 +122,7 @@ export class LocalProductListComponent implements OnInit {
   }
 
   orderShops(dataMap: any): void {
+    debugger;
     this.sortBy = sessionStorage.getItem('sort') ? sessionStorage.getItem('sort') : 'alpha';
     if (this.sortBy === 'location') {
       this.localProductShops = [];
@@ -188,6 +190,7 @@ export class LocalProductListComponent implements OnInit {
 
 
   onSubmit(): void {
+    console.log('sortBy', this.sortBy);
     const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
     if (userLatLon || this.sortBy === 'alpha') {
       this.isLoading = true;
