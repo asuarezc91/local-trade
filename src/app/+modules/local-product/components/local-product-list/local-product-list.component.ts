@@ -184,7 +184,11 @@ export class LocalProductListComponent implements OnInit {
 
 
   onSubmit(): void {
-    this.isLoading = true;
+    const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
+    debugger;
+    if (userLatLon || this.sortBy === 'alpha') {
+      this.isLoading = true;
+    }
     if (this.isTermSelected) {
       const byTermValue = this.localForm.get('byTerm').value;
       const dataFilter = [this.removeAccents(byTermValue), this.pageNumber, true];
@@ -213,11 +217,14 @@ export class LocalProductListComponent implements OnInit {
     this.getCoordinates();
     setTimeout(() => {
       // if (this.coordinatesLocation) {
+      const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
+      if (userLatLon) {
         this.isLoading = true;
-        this.sortByLocation = true;
-        sessionStorage.setItem('sort', 'location');
-        this.sortBy = sessionStorage.getItem('sort');
-        this.mapSidebarService.orderDataByLocation(this.coordinatesLocation);
+      }
+      this.sortByLocation = true;
+      sessionStorage.setItem('sort', 'location');
+      this.sortBy = sessionStorage.getItem('sort');
+      this.mapSidebarService.orderDataByLocation(this.coordinatesLocation);
       // } 
       // else {
       //   console.log('There is a problem with the coordinates');

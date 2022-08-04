@@ -14,10 +14,9 @@ import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
 import SimpleMarkerSymbol from '@arcgis/core/symbols/SimpleMarkerSymbol';
 import Point from "@arcgis/core/geometry/Point";
 import Graphic from '@arcgis/core/Graphic';
-import Circle from "@arcgis/core/geometry/Circle";
+import Locate from "@arcgis/core/widgets/Locate";
 import * as geometryService from "@arcgis/core/rest/geometryService";
 import DistanceParameters from "@arcgis/core/rest/support/DistanceParameters";
-import SpatialReference from "@arcgis/core/geometry/SpatialReference";
 import config from '@arcgis/core/config.js';
 import { MapSidebarService } from 'src/app/services/map-sidebar/map-sidebar.service';
 import { filter } from 'rxjs/operators';
@@ -45,6 +44,7 @@ export class MapComponent implements OnInit, OnDestroy {
   private shops;
   public viewEsriMap: boolean = false;
   public ubicationUserLayer;
+  private userUbication: object;
 
 
   @ViewChild('mapViewNode', { static: true }) private mapViewEl: ElementRef;
@@ -115,6 +115,31 @@ export class MapComponent implements OnInit, OnDestroy {
       map: this.myMap,
       zoom: 10,
       center: [-17.93, 28.66]
+    });
+
+    let locateWidget = new Locate({
+      view: view,   // Attaches the Locate button to the view
+      useHeadingEnabled: false,
+      goToLocationEnabled: false,
+      graphic: new Graphic({
+        // symbol: { type: "simple-marker" }  // overwrites the default symbol used for the
+        // graphic placed at the location of the user when found
+      })
+    });
+
+    view.ui.add(locateWidget, "top-left");
+
+    locateWidget.on("locate", function (locateEvent) {
+      console.log('ON WITHOUT VIEW THEN');
+      const userUbication = { latitude: locateEvent.position.coords.latitude, longitude: locateEvent.position.coords.longitude };
+      sessionStorage.setItem('userUbication', JSON.stringify(userUbication));
+    });
+
+    view.when(function () {
+      locateWidget.locate().then(function (pos) {
+        const userUbication = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+        sessionStorage.setItem('userUbication', JSON.stringify(userUbication));
+      });
     });
 
 
@@ -241,18 +266,23 @@ export class MapComponent implements OnInit, OnDestroy {
     //webpack-plugin
 
     this.MapSidebarService.orderByLocationChanges$.subscribe(async data => {
+      console.log('sessionStorage.getItem', JSON.parse(sessionStorage.getItem('userUbication')));
+      const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
 
-      const aux: any = data;
+
+      if (userLatLon){
       const geometrySrv = geometryService;
       const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer';
 
       const newShopping = this.shops.map(shop => {
         const myPromise = new Promise((resolve, reject) => {
           // setTimeout(() => {
-          const testPointUserInTazacorte: Point = new Point({
-            latitude: 28.65194343028121,
-            longitude: -17.94569064538474
-          });
+          // const testPointUserInTazacorte: Point = new Point({
+          //   latitude: 28.65194343028121,
+          //   longitude: -17.94569064538474
+          // });
+
+          const testPointUserInTazacorte: Point = new Point(userLatLon);
 
           if (!this.ubicationUserLayer) {
             const graphicUbication = new Graphic({  // graphic with line geometry
@@ -294,6 +324,10 @@ export class MapComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.MapSidebarService.sendDataFromMap(newShopping);
       }, 2000);
+    }
+    else {
+      alert('You need allow the user ubication');
+    }
     });
   }
 
