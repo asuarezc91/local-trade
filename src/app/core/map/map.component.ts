@@ -137,7 +137,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
     view.when(function () {
       locateWidget.locate().then(function (pos) {
-        console.log('view when');
         const userUbication = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
         sessionStorage.setItem('userUbication', JSON.stringify(userUbication));
       });
@@ -146,7 +145,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
     this.MapSidebarService.requiredUserLocation$.subscribe(data => {
       locateWidget.locate().then(function (pos) {
-        console.log('view when filtersToMapChanges');
         const userUbication = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
         sessionStorage.setItem('userUbication', JSON.stringify(userUbication));
         sessionStorage.setItem('sort', 'location');
@@ -210,6 +208,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
   filterLocalProductByCategorieOrTerm() {
     //LOCAL PRODUCT LAYER FILTER BY CATEGORIE
+    debugger;
     this.MapSidebarService.filtersToMapChanges$.subscribe(data => {
       this.view.graphics.removeAll();
       const layerUrl = this.myMap.layers.items[0].url;
@@ -233,6 +232,7 @@ export class MapComponent implements OnInit, OnDestroy {
         }
         this.actualLayer.queryFeatures(query)
           .then((response) => {
+            //BY TERM 
             if (data[2]) {
               this.actualLayer.visible = false;
               const allFeatures = response.features;
@@ -278,11 +278,7 @@ export class MapComponent implements OnInit, OnDestroy {
     //webpack-plugin
 
     this.MapSidebarService.orderByLocationChanges$.subscribe(async data => {
-      console.log('MAAAAAAAAAAAAAAAAAAP')
-      debugger;
-      console.log('sessionStorage.getItem', JSON.parse(sessionStorage.getItem('userUbication')));
       const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
-
 
       if (userLatLon) {
         const geometrySrv = geometryService;
@@ -336,7 +332,6 @@ export class MapComponent implements OnInit, OnDestroy {
         });
         //TO CONTROL THE PROBLEM WITH ASYNC DATA DISTANCE ************
         setTimeout(() => {
-          console.log('settime')
           this.MapSidebarService.sendDataFromMap(newShopping);
         }, 2000);
       }

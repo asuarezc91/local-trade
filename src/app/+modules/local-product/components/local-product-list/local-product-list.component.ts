@@ -107,7 +107,6 @@ export class LocalProductListComponent implements OnInit {
 
   getDataShops(): void {
     this.mapSidebarService.dataToLocalProductLayer$.subscribe(async data => {
-      console.log('FUUUUUUUUUARK SALTA 2 VECES! CUANDO BUSCAMOS POR TEXTO!!', data);
       this.originalData = data;
       const localSPage = localStorage.getItem('page');
       if (localSPage && this.formDetailPage) {
@@ -190,7 +189,6 @@ export class LocalProductListComponent implements OnInit {
 
 
   onSubmit(): void {
-    console.log('sortBy', this.sortBy);
     const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
     if (userLatLon || this.sortBy === 'alpha') {
       this.isLoading = true;
@@ -206,9 +204,12 @@ export class LocalProductListComponent implements OnInit {
       const filterFormLocal = [shoppingValue];
       localStorage.setItem('filterFormLocal', JSON.stringify(filterFormLocal));
     }
+  setTimeout(() => {
+    //THE PROBLEM TO OBTAIN THE DISTANCES ON SEARCH BY TERM!!!!!!!!
     if (this.sortBy === 'location') {
       this.obtainLocation();
     }
+  }, 2000);
     this.paginator.firstPage();
   }
 
