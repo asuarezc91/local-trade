@@ -292,7 +292,12 @@ export class MapComponent implements OnInit, OnDestroy {
             //   longitude: -17.94569064538474
             // });
 
-            const testPointUserInTazacorte: Point = new Point(userLatLon);
+            const testPointUserInTazacorte: Point = new Point({
+              latitude: 28.65194343028121,
+              longitude: -17.94569064538474
+            });
+
+            //const testPointUserInTazacorte: Point = new Point(userLatLon);
 
             if (!this.ubicationUserLayer) {
               const graphicUbication = new Graphic({  // graphic with line geometry
