@@ -126,7 +126,6 @@ export class MapComponent implements OnInit, OnDestroy {
     view.ui.add(locateWidget, "top-left");
 
     // locateWidget.on("locate", function (locateEvent) {
-    //   console.log('no button');
     //   const userUbication = { latitude: locateEvent.position.coords.latitude, longitude: locateEvent.position.coords.longitude };
     //   sessionStorage.setItem('userUbication', JSON.stringify(userUbication));
     // });
@@ -159,11 +158,6 @@ export class MapComponent implements OnInit, OnDestroy {
     const LAYERS_MAP = {
       local: 'https://services9.arcgis.com/4RxTGB2fxcbFrzj3/ArcGIS/rest/services/categories_shops/FeatureServer/0'
     };
-
-    //DELETE OBSERVABLE
-    // this.SidebarService.sidebarView$.subscribe(data => {
-    //   this.changeLayer(data);
-    // });
 
     config.assetsPath = 'assets/';
     const layer = 'local';  //local layer by default but we need change this and do dinamically
@@ -357,10 +351,10 @@ export class MapComponent implements OnInit, OnDestroy {
           });
           features.symbol = Sym;
           const graphs = this.view.graphics.items;
-          const graphicsToDelete = graphs.filter(graph => graph.symbol.size !== 12);
-          graphicsToDelete.forEach(item => {
-            this.view.graphics.remove(item);
-          });
+            const graphicsToDelete = graphs.filter(graph => graph.symbol?.size !== 12);
+            graphicsToDelete.forEach(item => {
+              this.view.graphics.remove(item);
+            });
           //this.view.graphics.removeAll();
           this.view.graphics.add(features);
           this.view.goTo({

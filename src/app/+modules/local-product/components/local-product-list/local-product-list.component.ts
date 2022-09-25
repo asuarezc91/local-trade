@@ -288,10 +288,10 @@ export class LocalProductListComponent implements OnInit {
   }
 
   openMapDialog(coordinates: any, item: any): void {
-    let final;
+    let shopChoosen;
     this.originalData.map((shop) => {
       if (shop.attributes.NOMBRE === item.NOMBRE) {
-        final = shop;
+        shopChoosen = shop;
       }
     }
     );
@@ -300,8 +300,8 @@ export class LocalProductListComponent implements OnInit {
       data: {
         dataKey: coordinates,
         shop: {
-          latitude: final.geometry.latitude,
-          longitude: final.geometry.longitude
+          latitude: shopChoosen.geometry.latitude,
+          longitude: shopChoosen.geometry.longitude
         }
       }
       //TO PHONE SCREEN:

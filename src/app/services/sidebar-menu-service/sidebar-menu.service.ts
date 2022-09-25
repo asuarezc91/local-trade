@@ -10,8 +10,9 @@ export class SidebarMenuService {
   sidebarView = new Subject<boolean>();
   sidebarView$ = this.sidebarView.asObservable();
   constructor() { }
+
   //Change to Subject 
-  sidebarViewChange$ = new EventEmitter<boolean>();
+  // sidebarViewChange$ = new EventEmitter<boolean>();
 
 
   sidebarChange(show) {
