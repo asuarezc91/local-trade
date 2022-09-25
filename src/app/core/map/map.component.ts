@@ -40,7 +40,6 @@ export class MapComponent implements OnInit, OnDestroy {
   public layerByLocation: FeatureLayer;
   public municipalitieLayer;
   public allElements;
-  //public firstLoad: boolean = true;
   private shops;
   public viewEsriMap: boolean = false;
   public ubicationUserLayer;
@@ -71,9 +70,6 @@ export class MapComponent implements OnInit, OnDestroy {
     )
       .subscribe(event => {
         this.actualURL = event['url'];
-        // if (this.firstLoad) {
-        //   this.firstLoad = false;
-        // }
         if (event['url'] !== '/local-product' && event['url'] !== '/local-product/detail') {
           localStorage.removeItem('filterFormLocal');
         }
@@ -208,7 +204,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
   filterLocalProductByCategorieOrTerm() {
     //LOCAL PRODUCT LAYER FILTER BY CATEGORIE
-    debugger;
     this.MapSidebarService.filtersToMapChanges$.subscribe(data => {
       this.view.graphics.removeAll();
       const layerUrl = this.myMap.layers.items[0].url;
@@ -273,10 +268,6 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   orderByLocation(): void {
-    // https://www.npmjs.com/package/@arcgis/webpack-plugin
-
-    //webpack-plugin
-
     this.MapSidebarService.orderByLocationChanges$.subscribe(async data => {
       const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
 

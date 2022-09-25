@@ -11,7 +11,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { PaginatorInfoToSearchService } from 'src/app/services/paginator-info-to-search/paginator-info-to-search.service';
 import { MatDialog } from '@angular/material/dialog';
 import { GoogleMapDialogComponent } from 'src/app/core/modals/google-map-dialog/google-map-dialog.component';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+
 
 
 @Component({
@@ -121,7 +121,6 @@ export class LocalProductListComponent implements OnInit {
   }
 
   orderShops(dataMap: any): void {
-    debugger;
     this.sortBy = sessionStorage.getItem('sort') ? sessionStorage.getItem('sort') : 'alpha';
     if (this.sortBy === 'location') {
       this.localProductShops = [];
@@ -241,36 +240,6 @@ export class LocalProductListComponent implements OnInit {
     // }, 2000);
   }
 
-  // getCoordinates(): void {
-  //   const options = {
-  //     enableHighAccuracy: true,
-  //     timeout: 5000,
-  //     maximumAge: 0
-  //   };
-  //   let coordinates;
-  //   function success(pos): void {
-  //     const crd = pos.coords;
-  //     coordinates = {
-  //       latitude: crd.latitude,
-  //       longitude: crd.longitude
-  //     };
-  //   };
-
-  //   function error(err): void {
-  //     console.warn('ERROR(' + err.code + '): ' + err.message);
-  //   };
-  //   navigator.geolocation.getCurrentPosition(success, error, options);
-  //   setTimeout(() => {
-  //     if (coordinates) {
-  //       this.coordinatesLocation = coordinates;
-  //     }
-  //   }, 500);
-  // }
-
-  // orderBy(event): void {
-
-  // }
-
   orderByAlpha(): void {
     this.orderAlphaOption.checked = true;
     this.orderLocationOption.checked = false;
@@ -310,14 +279,6 @@ export class LocalProductListComponent implements OnInit {
 
 
   openDialog(item): void {
-    // if (this.coordinatesLocation) {
-    //   this.openMapDialog(this.coordinatesLocation, item);
-    // } else {
-    //   this.getCoordinates();
-    //   setTimeout(() => {
-    //     this.openMapDialog(this.coordinatesLocation, item);
-    //   }, 500);
-    // }
     const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
     if (userLatLon) {
       this.openMapDialog(userLatLon, item);
