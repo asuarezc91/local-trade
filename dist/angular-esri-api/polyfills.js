@@ -7,7 +7,7 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /home/angel/Documentos/new_app/src/polyfills.ts */"hN/g");
+module.exports = __webpack_require__(/*! C:\Users\Dani\Desktop\LA_PALMA_TRADE\local-trade\src\polyfills.ts */"hN/g");
 
 
 /***/ }),

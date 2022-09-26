@@ -219,7 +219,7 @@ VisualsModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInje
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /home/angel/Documentos/new_app/src/main.ts */"zUnb");
+module.exports = __webpack_require__(/*! C:\Users\Dani\Desktop\LA_PALMA_TRADE\local-trade\src\main.ts */"zUnb");
 
 
 /***/ }),
@@ -242,14 +242,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _arcgis_core_layers_GraphicsLayer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @arcgis/core/layers/GraphicsLayer */ "zgsL");
 /* harmony import */ var _arcgis_core_symbols_SimpleMarkerSymbol__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @arcgis/core/symbols/SimpleMarkerSymbol */ "Tcmu");
 /* harmony import */ var _arcgis_core_geometry_Point__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @arcgis/core/geometry/Point */ "SuVq");
-/* harmony import */ var _arcgis_core_rest_geometryService__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @arcgis/core/rest/geometryService */ "DMBf");
-/* harmony import */ var _arcgis_core_rest_support_DistanceParameters__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @arcgis/core/rest/support/DistanceParameters */ "cjkr");
-/* harmony import */ var _arcgis_core_config_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @arcgis/core/config.js */ "EyXx");
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @angular/router */ "tyNb");
-/* harmony import */ var src_app_services_map_sidebar_map_sidebar_service__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! src/app/services/map-sidebar/map-sidebar.service */ "VMWZ");
-/* harmony import */ var src_app_services_data_map_service_data_map_service_service__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! src/app/services/data-map-service/data-map-service.service */ "Xf1B");
-/* harmony import */ var src_app_services_sidebar_menu_service_sidebar_menu_service__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! src/app/services/sidebar-menu-service/sidebar-menu.service */ "kzSU");
+/* harmony import */ var _arcgis_core_Graphic__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @arcgis/core/Graphic */ "jWBI");
+/* harmony import */ var _arcgis_core_widgets_Locate__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @arcgis/core/widgets/Locate */ "zdJy");
+/* harmony import */ var _arcgis_core_rest_geometryService__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @arcgis/core/rest/geometryService */ "DMBf");
+/* harmony import */ var _arcgis_core_rest_support_DistanceParameters__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @arcgis/core/rest/support/DistanceParameters */ "cjkr");
+/* harmony import */ var _arcgis_core_config_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @arcgis/core/config.js */ "EyXx");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @angular/router */ "tyNb");
+/* harmony import */ var src_app_services_map_sidebar_map_sidebar_service__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! src/app/services/map-sidebar/map-sidebar.service */ "VMWZ");
+/* harmony import */ var src_app_services_data_map_service_data_map_service_service__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! src/app/services/data-map-service/data-map-service.service */ "Xf1B");
+/* harmony import */ var src_app_services_sidebar_menu_service_sidebar_menu_service__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! src/app/services/sidebar-menu-service/sidebar-menu.service */ "kzSU");
+
+
 
 
 
@@ -282,12 +286,9 @@ class MapComponent {
         this.MapSidebarService.formDetailPage$.subscribe(response => {
             this.formDetailPage = response;
         });
-        this.router.events.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_11__["filter"])(event => event instanceof _angular_router__WEBPACK_IMPORTED_MODULE_12__["NavigationEnd"]))
+        this.router.events.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_13__["filter"])(event => event instanceof _angular_router__WEBPACK_IMPORTED_MODULE_14__["NavigationEnd"]))
             .subscribe(event => {
             this.actualURL = event['url'];
-            // if (this.firstLoad) {
-            //   this.firstLoad = false;
-            // }
             if (event['url'] !== '/local-product' && event['url'] !== '/local-product/detail') {
                 localStorage.removeItem('filterFormLocal');
             }
@@ -321,6 +322,37 @@ class MapComponent {
             zoom: 10,
             center: [-17.93, 28.66]
         });
+        let locateWidget = new _arcgis_core_widgets_Locate__WEBPACK_IMPORTED_MODULE_9__["default"]({
+            view: view,
+            useHeadingEnabled: false,
+            goToLocationEnabled: false,
+            graphic: new _arcgis_core_Graphic__WEBPACK_IMPORTED_MODULE_8__["default"]({
+            // symbol: { type: "simple-marker" }  // overwrites the default symbol used for the
+            // graphic placed at the location of the user when found
+            })
+        });
+        view.ui.add(locateWidget, "top-left");
+        // locateWidget.on("locate", function (locateEvent) {
+        //   const userUbication = { latitude: locateEvent.position.coords.latitude, longitude: locateEvent.position.coords.longitude };
+        //   sessionStorage.setItem('userUbication', JSON.stringify(userUbication));
+        // });
+        view.when(function () {
+            locateWidget.locate().then(function (pos) {
+                const userUbication = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+                sessionStorage.setItem('userUbication', JSON.stringify(userUbication));
+            });
+        });
+        this.MapSidebarService.requiredUserLocation$.subscribe(data => {
+            locateWidget.locate().then(function (pos) {
+                const userUbication = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+                sessionStorage.setItem('userUbication', JSON.stringify(userUbication));
+                sessionStorage.setItem('sort', 'location');
+            });
+            setTimeout(() => {
+                this.MapSidebarService.startIsLoadingLogo('');
+                this.MapSidebarService.orderDataByLocation('');
+            }, 1000);
+        });
         this.view = view;
         return this.view.when();
     }
@@ -328,11 +360,7 @@ class MapComponent {
         const LAYERS_MAP = {
             local: 'https://services9.arcgis.com/4RxTGB2fxcbFrzj3/ArcGIS/rest/services/categories_shops/FeatureServer/0'
         };
-        //DELETE OBSERVABLE
-        // this.SidebarService.sidebarView$.subscribe(data => {
-        //   this.changeLayer(data);
-        // });
-        _arcgis_core_config_js__WEBPACK_IMPORTED_MODULE_10__["default"].assetsPath = 'assets/';
+        _arcgis_core_config_js__WEBPACK_IMPORTED_MODULE_12__["default"].assetsPath = 'assets/';
         const layer = 'local'; //local layer by default but we need change this and do dinamically
         this.zone.runOutsideAngular(() => {
             this.initializeMap(layer).then(() => {
@@ -388,6 +416,7 @@ class MapComponent {
                 }
                 this.actualLayer.queryFeatures(query)
                     .then((response) => {
+                    //BY TERM 
                     if (data[2]) {
                         this.actualLayer.visible = false;
                         const allFeatures = response.features;
@@ -404,10 +433,14 @@ class MapComponent {
                         this.myMap.add(this.layerByLocation);
                         this.layerByLocation.visible = true;
                         this.shops = filteredShops;
-                        this.MapSidebarService.sendDataFromMap(filteredShops);
+                        setTimeout(() => {
+                            this.MapSidebarService.sendDataFromMap(filteredShops);
+                        }, 2000);
                     }
                     else {
-                        this.layerByLocation.visible = false;
+                        if (this.layerByLocation) {
+                            this.layerByLocation.visible = false;
+                        }
                         this.myMap.add(this.actualLayer);
                         this.actualLayer.visible = true;
                         const features = response.features;
@@ -422,41 +455,63 @@ class MapComponent {
         });
     }
     orderByLocation() {
-        // https://www.npmjs.com/package/@arcgis/webpack-plugin
-        //webpack-plugin
         this.MapSidebarService.orderByLocationChanges$.subscribe((data) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            const aux = data;
-            const geometrySrv = _arcgis_core_rest_geometryService__WEBPACK_IMPORTED_MODULE_8__;
-            const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer';
-            const newShopping = this.shops.map(shop => {
-                const myPromise = new Promise((resolve, reject) => {
-                    // setTimeout(() => {
-                    const testPointUserInTazacorte = new _arcgis_core_geometry_Point__WEBPACK_IMPORTED_MODULE_7__["default"]({
-                        latitude: 28.65194343028121,
-                        longitude: -17.94569064538474
+            const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
+            if (userLatLon) {
+                const geometrySrv = _arcgis_core_rest_geometryService__WEBPACK_IMPORTED_MODULE_10__;
+                const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer';
+                const newShopping = this.shops.map(shop => {
+                    const myPromise = new Promise((resolve, reject) => {
+                        // setTimeout(() => {
+                        // const testPointUserInTazacorte: Point = new Point({
+                        //   latitude: 28.65194343028121,
+                        //   longitude: -17.94569064538474
+                        // });
+                        const testPointUserInTazacorte = new _arcgis_core_geometry_Point__WEBPACK_IMPORTED_MODULE_7__["default"]({
+                            latitude: 28.65194343028121,
+                            longitude: -17.94569064538474
+                        });
+                        //const testPointUserInTazacorte: Point = new Point(userLatLon);
+                        if (!this.ubicationUserLayer) {
+                            const graphicUbication = new _arcgis_core_Graphic__WEBPACK_IMPORTED_MODULE_8__["default"]({
+                                geometry: testPointUserInTazacorte,
+                            });
+                            const fields = [];
+                            this.ubicationUserLayer = new _arcgis_core_layers_FeatureLayer__WEBPACK_IMPORTED_MODULE_4__["default"]({
+                                fields,
+                                objectIdField: "ObjectID",
+                                geometryType: "point",
+                                spatialReference: { wkid: 4326 },
+                                source: [graphicUbication],
+                            });
+                            this.myMap.add(this.ubicationUserLayer);
+                        }
+                        const distParams = new _arcgis_core_rest_support_DistanceParameters__WEBPACK_IMPORTED_MODULE_11__["default"]();
+                        //distParams.geometry1 = locationUserPoint;
+                        distParams.geometry1 = testPointUserInTazacorte;
+                        distParams.distanceUnit = 'kilometers';
+                        distParams.geodesic = true;
+                        let shopUbication = new _arcgis_core_geometry_Point__WEBPACK_IMPORTED_MODULE_7__["default"]({
+                            latitude: shop.geometry.latitude,
+                            longitude: shop.geometry.longitude
+                        });
+                        distParams.geometry2 = shopUbication;
+                        resolve(geometrySrv.distance(url, distParams));
+                        // }, 1000);
                     });
-                    const distParams = new _arcgis_core_rest_support_DistanceParameters__WEBPACK_IMPORTED_MODULE_9__["default"]();
-                    //distParams.geometry1 = locationUserPoint;
-                    distParams.geometry1 = testPointUserInTazacorte;
-                    distParams.distanceUnit = 'kilometers';
-                    distParams.geodesic = true;
-                    let testingPoint = new _arcgis_core_geometry_Point__WEBPACK_IMPORTED_MODULE_7__["default"]({
-                        latitude: shop.geometry.latitude,
-                        longitude: shop.geometry.longitude
+                    myPromise.then((value) => {
+                        shop.attributes['distance'] = value.toFixed(2);
                     });
-                    distParams.geometry2 = testingPoint;
-                    resolve(geometrySrv.distance(url, distParams));
-                    // }, 1000);
+                    return shop;
                 });
-                myPromise.then((value) => {
-                    shop.attributes['distance'] = value.toFixed(2);
-                });
-                return shop;
-            });
-            //TO CONTROL THE PROBLEM WITH ASYNC DATA DISTANCE ************
-            setTimeout(() => {
-                this.MapSidebarService.sendDataFromMap(newShopping);
-            }, 2000);
+                //TO CONTROL THE PROBLEM WITH ASYNC DATA DISTANCE ************
+                setTimeout(() => {
+                    this.MapSidebarService.sendDataFromMap(newShopping);
+                }, 2000);
+            }
+            else {
+                alert('You need allow the user ubication');
+            }
         }));
     }
     zoomToFeature() {
@@ -478,7 +533,7 @@ class MapComponent {
                 });
                 features.symbol = Sym;
                 const graphs = this.view.graphics.items;
-                const graphicsToDelete = graphs.filter(graph => graph.symbol.size !== 12);
+                const graphicsToDelete = graphs.filter(graph => { var _a; return ((_a = graph.symbol) === null || _a === void 0 ? void 0 : _a.size) !== 12; });
                 graphicsToDelete.forEach(item => {
                     this.view.graphics.remove(item);
                 });
@@ -497,7 +552,7 @@ class MapComponent {
         }
     }
 }
-MapComponent.ɵfac = function MapComponent_Factory(t) { return new (t || MapComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_1__["NgZone"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_services_map_sidebar_map_sidebar_service__WEBPACK_IMPORTED_MODULE_13__["MapSidebarService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_12__["Router"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_services_data_map_service_data_map_service_service__WEBPACK_IMPORTED_MODULE_14__["DataMapServiceService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_services_sidebar_menu_service_sidebar_menu_service__WEBPACK_IMPORTED_MODULE_15__["SidebarMenuService"])); };
+MapComponent.ɵfac = function MapComponent_Factory(t) { return new (t || MapComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_1__["NgZone"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_services_map_sidebar_map_sidebar_service__WEBPACK_IMPORTED_MODULE_15__["MapSidebarService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_14__["Router"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_services_data_map_service_data_map_service_service__WEBPACK_IMPORTED_MODULE_16__["DataMapServiceService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_services_sidebar_menu_service_sidebar_menu_service__WEBPACK_IMPORTED_MODULE_17__["SidebarMenuService"])); };
 MapComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: MapComponent, selectors: [["app-map"]], viewQuery: function MapComponent_Query(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵstaticViewQuery"](_c0, true);
     } if (rf & 2) {
@@ -505,7 +560,7 @@ MapComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineCompo
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵloadQuery"]()) && (ctx.mapViewEl = _t.first);
     } }, decls: 2, vars: 0, consts: [["mapViewNode", ""]], template: function MapComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](0, "div", null, 0);
-    } }, styles: [".esri-view[_ngcontent-%COMP%] {\n    height: calc(100% - 64px);\n    width: 100%;\n    position: absolute;\n    outline: none;\n  }\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1hcC5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0lBQ0kseUJBQXlCO0lBQ3pCLFdBQVc7SUFDWCxrQkFBa0I7SUFDbEIsYUFBYTtFQUNmIiwiZmlsZSI6Im1hcC5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmVzcmktdmlldyB7XG4gICAgaGVpZ2h0OiBjYWxjKDEwMCUgLSA2NHB4KTtcbiAgICB3aWR0aDogMTAwJTtcbiAgICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gICAgb3V0bGluZTogbm9uZTtcbiAgfVxuIl19 */"] });
+    } }, styles: [".esri-view[_ngcontent-%COMP%] {\r\n    height: calc(100% - 64px);\r\n    width: 100%;\r\n    position: absolute;\r\n    outline: none;\r\n  }\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1hcC5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0lBQ0kseUJBQXlCO0lBQ3pCLFdBQVc7SUFDWCxrQkFBa0I7SUFDbEIsYUFBYTtFQUNmIiwiZmlsZSI6Im1hcC5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmVzcmktdmlldyB7XHJcbiAgICBoZWlnaHQ6IGNhbGMoMTAwJSAtIDY0cHgpO1xyXG4gICAgd2lkdGg6IDEwMCU7XHJcbiAgICBwb3NpdGlvbjogYWJzb2x1dGU7XHJcbiAgICBvdXRsaW5lOiBub25lO1xyXG4gIH1cclxuIl19 */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](MapComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"],
         args: [{
@@ -513,7 +568,7 @@ MapComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineCompo
                 templateUrl: './map.component.html',
                 styleUrls: ['./map.component.css']
             }]
-    }], function () { return [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["NgZone"] }, { type: src_app_services_map_sidebar_map_sidebar_service__WEBPACK_IMPORTED_MODULE_13__["MapSidebarService"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_12__["Router"] }, { type: src_app_services_data_map_service_data_map_service_service__WEBPACK_IMPORTED_MODULE_14__["DataMapServiceService"] }, { type: src_app_services_sidebar_menu_service_sidebar_menu_service__WEBPACK_IMPORTED_MODULE_15__["SidebarMenuService"] }]; }, { mapViewEl: [{
+    }], function () { return [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["NgZone"] }, { type: src_app_services_map_sidebar_map_sidebar_service__WEBPACK_IMPORTED_MODULE_15__["MapSidebarService"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_14__["Router"] }, { type: src_app_services_data_map_service_data_map_service_service__WEBPACK_IMPORTED_MODULE_16__["DataMapServiceService"] }, { type: src_app_services_sidebar_menu_service_sidebar_menu_service__WEBPACK_IMPORTED_MODULE_17__["SidebarMenuService"] }]; }, { mapViewEl: [{
             type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["ViewChild"],
             args: ['mapViewNode', { static: true }]
         }] }); })();
@@ -592,7 +647,7 @@ HeaderComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCo
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "button", 2);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    } }, directives: [_angular_material_toolbar__WEBPACK_IMPORTED_MODULE_1__["MatToolbar"]], styles: [".header[_ngcontent-%COMP%] {\n    background-color: #F2F2F2;\n}\n\n.logo[_ngcontent-%COMP%] {\n  width: 100%;\n  height: 100%;\n  color: white; \n  background: url(https://i.ibb.co/9sT4bbF/shop-1.png) no-repeat;\n  background-color: #F2F2F2;\n  background-size: 50px;\n  background-position: center;\n  text-align: center;\n  box-shadow: none;\n  border: none;\n}\n\n.sectionLogo[_ngcontent-%COMP%] {\n    width: 5%;\n    height: 80%;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImhlYWRlci5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0lBQ0kseUJBQXlCO0FBQzdCOztBQUVBO0VBQ0UsV0FBVztFQUNYLFlBQVk7RUFDWixZQUFZO0VBQ1osOERBQThEO0VBQzlELHlCQUF5QjtFQUN6QixxQkFBcUI7RUFDckIsMkJBQTJCO0VBQzNCLGtCQUFrQjtFQUNsQixnQkFBZ0I7RUFDaEIsWUFBWTtBQUNkOztBQUVBO0lBQ0ksU0FBUztJQUNULFdBQVc7QUFDZiIsImZpbGUiOiJoZWFkZXIuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5oZWFkZXIge1xuICAgIGJhY2tncm91bmQtY29sb3I6ICNGMkYyRjI7XG59XG5cbi5sb2dvIHtcbiAgd2lkdGg6IDEwMCU7XG4gIGhlaWdodDogMTAwJTtcbiAgY29sb3I6IHdoaXRlOyBcbiAgYmFja2dyb3VuZDogdXJsKGh0dHBzOi8vaS5pYmIuY28vOXNUNGJiRi9zaG9wLTEucG5nKSBuby1yZXBlYXQ7XG4gIGJhY2tncm91bmQtY29sb3I6ICNGMkYyRjI7XG4gIGJhY2tncm91bmQtc2l6ZTogNTBweDtcbiAgYmFja2dyb3VuZC1wb3NpdGlvbjogY2VudGVyO1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGJveC1zaGFkb3c6IG5vbmU7XG4gIGJvcmRlcjogbm9uZTtcbn1cblxuLnNlY3Rpb25Mb2dvIHtcbiAgICB3aWR0aDogNSU7XG4gICAgaGVpZ2h0OiA4MCU7XG59XG5cbiJdfQ== */"] });
+    } }, directives: [_angular_material_toolbar__WEBPACK_IMPORTED_MODULE_1__["MatToolbar"]], styles: [".header[_ngcontent-%COMP%] {\r\n    background-color: #F2F2F2;\r\n}\r\n\r\n.logo[_ngcontent-%COMP%] {\r\n  width: 100%;\r\n  height: 100%;\r\n  color: white; \r\n  background: url(https://i.ibb.co/9sT4bbF/shop-1.png) no-repeat;\r\n  background-color: #F2F2F2;\r\n  background-size: 50px;\r\n  background-position: center;\r\n  text-align: center;\r\n  box-shadow: none;\r\n  border: none;\r\n}\r\n\r\n.sectionLogo[_ngcontent-%COMP%] {\r\n    width: 5%;\r\n    height: 80%;\r\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImhlYWRlci5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0lBQ0kseUJBQXlCO0FBQzdCOztBQUVBO0VBQ0UsV0FBVztFQUNYLFlBQVk7RUFDWixZQUFZO0VBQ1osOERBQThEO0VBQzlELHlCQUF5QjtFQUN6QixxQkFBcUI7RUFDckIsMkJBQTJCO0VBQzNCLGtCQUFrQjtFQUNsQixnQkFBZ0I7RUFDaEIsWUFBWTtBQUNkOztBQUVBO0lBQ0ksU0FBUztJQUNULFdBQVc7QUFDZiIsImZpbGUiOiJoZWFkZXIuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5oZWFkZXIge1xyXG4gICAgYmFja2dyb3VuZC1jb2xvcjogI0YyRjJGMjtcclxufVxyXG5cclxuLmxvZ28ge1xyXG4gIHdpZHRoOiAxMDAlO1xyXG4gIGhlaWdodDogMTAwJTtcclxuICBjb2xvcjogd2hpdGU7IFxyXG4gIGJhY2tncm91bmQ6IHVybChodHRwczovL2kuaWJiLmNvLzlzVDRiYkYvc2hvcC0xLnBuZykgbm8tcmVwZWF0O1xyXG4gIGJhY2tncm91bmQtY29sb3I6ICNGMkYyRjI7XHJcbiAgYmFja2dyb3VuZC1zaXplOiA1MHB4O1xyXG4gIGJhY2tncm91bmQtcG9zaXRpb246IGNlbnRlcjtcclxuICB0ZXh0LWFsaWduOiBjZW50ZXI7XHJcbiAgYm94LXNoYWRvdzogbm9uZTtcclxuICBib3JkZXI6IG5vbmU7XHJcbn1cclxuXHJcbi5zZWN0aW9uTG9nbyB7XHJcbiAgICB3aWR0aDogNSU7XHJcbiAgICBoZWlnaHQ6IDgwJTtcclxufVxyXG5cclxuIl19 */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](HeaderComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -710,7 +765,7 @@ DialogPhotoGalleryComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.images);
-    } }, directives: [_angular_material_dialog__WEBPACK_IMPORTED_MODULE_1__["MatDialogContent"], _angular_common__WEBPACK_IMPORTED_MODULE_2__["NgIf"], _ng_bootstrap_ng_bootstrap__WEBPACK_IMPORTED_MODULE_3__["NgbCarousel"], _ng_bootstrap_ng_bootstrap__WEBPACK_IMPORTED_MODULE_3__["NgbSlide"]], styles: [".mat-dialog-content[_ngcontent-%COMP%] {\n    display: block;\n    margin: 0 -24px;\n    padding: 0 24px;\n    max-height: 85vh;\n    overflow: auto;\n    -webkit-overflow-scrolling: touch;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImRpYWxvZy1waG90by1nYWxsZXJ5LmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7O0dBRUc7Ozs7QUFJSCwrQ0FBK0M7Ozs7QUFDL0M7SUFDSSxjQUFjO0lBQ2QsZUFBZTtJQUNmLGVBQWU7SUFDZixnQkFBZ0I7SUFDaEIsY0FBYztJQUNkLGlDQUFpQztBQUNyQyIsImZpbGUiOiJkaWFsb2ctcGhvdG8tZ2FsbGVyeS5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLyogLm1haW5Db250ZW50e1xuICAgIHdpZHRoOiA4MDBweDsgXG59ICovXG5cblxuXG4vKiBpcyBpbXBvcnRhdCB0aGUgbWF4LWhlaWdodCB0byAxM1wiIGRpc3BsYXlzICovXG4ubWF0LWRpYWxvZy1jb250ZW50IHtcbiAgICBkaXNwbGF5OiBibG9jaztcbiAgICBtYXJnaW46IDAgLTI0cHg7XG4gICAgcGFkZGluZzogMCAyNHB4O1xuICAgIG1heC1oZWlnaHQ6IDg1dmg7XG4gICAgb3ZlcmZsb3c6IGF1dG87XG4gICAgLXdlYmtpdC1vdmVyZmxvdy1zY3JvbGxpbmc6IHRvdWNoO1xufSJdfQ== */"] });
+    } }, directives: [_angular_material_dialog__WEBPACK_IMPORTED_MODULE_1__["MatDialogContent"], _angular_common__WEBPACK_IMPORTED_MODULE_2__["NgIf"], _ng_bootstrap_ng_bootstrap__WEBPACK_IMPORTED_MODULE_3__["NgbCarousel"], _ng_bootstrap_ng_bootstrap__WEBPACK_IMPORTED_MODULE_3__["NgbSlide"]], styles: [".mat-dialog-content[_ngcontent-%COMP%] {\r\n    display: block;\r\n    margin: 0 -24px;\r\n    padding: 0 24px;\r\n    max-height: 85vh;\r\n    overflow: auto;\r\n    -webkit-overflow-scrolling: touch;\r\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImRpYWxvZy1waG90by1nYWxsZXJ5LmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7O0dBRUc7Ozs7QUFJSCwrQ0FBK0M7Ozs7QUFDL0M7SUFDSSxjQUFjO0lBQ2QsZUFBZTtJQUNmLGVBQWU7SUFDZixnQkFBZ0I7SUFDaEIsY0FBYztJQUNkLGlDQUFpQztBQUNyQyIsImZpbGUiOiJkaWFsb2ctcGhvdG8tZ2FsbGVyeS5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLyogLm1haW5Db250ZW50e1xyXG4gICAgd2lkdGg6IDgwMHB4OyBcclxufSAqL1xyXG5cclxuXHJcblxyXG4vKiBpcyBpbXBvcnRhdCB0aGUgbWF4LWhlaWdodCB0byAxM1wiIGRpc3BsYXlzICovXHJcbi5tYXQtZGlhbG9nLWNvbnRlbnQge1xyXG4gICAgZGlzcGxheTogYmxvY2s7XHJcbiAgICBtYXJnaW46IDAgLTI0cHg7XHJcbiAgICBwYWRkaW5nOiAwIDI0cHg7XHJcbiAgICBtYXgtaGVpZ2h0OiA4NXZoO1xyXG4gICAgb3ZlcmZsb3c6IGF1dG87XHJcbiAgICAtd2Via2l0LW92ZXJmbG93LXNjcm9sbGluZzogdG91Y2g7XHJcbn0iXX0= */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](DialogPhotoGalleryComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -926,7 +981,7 @@ MenuSidebarComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngClass", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction2"](4, _c0, !ctx.show, ctx.show))("ngClass.xs", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction2"](7, _c1, !ctx.show, ctx.show))("ngClass.sm", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction2"](10, _c2, !ctx.show, ctx.show))("ngClass.md", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction2"](13, _c3, !ctx.show, ctx.show));
-    } }, directives: [_angular_flex_layout_extended__WEBPACK_IMPORTED_MODULE_6__["DefaultClassDirective"], _angular_common__WEBPACK_IMPORTED_MODULE_7__["NgClass"], _angular_material_button__WEBPACK_IMPORTED_MODULE_8__["MatButton"], _angular_router__WEBPACK_IMPORTED_MODULE_1__["RouterLinkActive"]], styles: [".sidebar-menu[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 5%;\n  background-color: #F2F2F2;\n  z-index: 1;\n  right: 21%;\n  top: 0;\n}\n\n.sidebar-menu-off[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 5%;\n  background-color: #F2F2F2;\n  z-index: 1;\n  right: 0%;\n  top: 0;\n}\n\nbutton[_ngcontent-%COMP%] {\n  width: 100%;\n  height: 100%;\n}\n\n.sidebar-menu-xs[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 5%;\n  background-color: #F2F2F2;\n  z-index: 1;\n  right: 80%;\n  top: 0;\n}\n\n.sidebar-menu-off-xs[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 5%;\n  background-color: #F2F2F2;\n  z-index: 1;\n  right: 0%;\n  top: 0;\n}\n\n.sidebar-menu-sm[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 5%;\n  background-color: #F2F2F2;\n  z-index: 1;\n  right: 40%;\n  top: 0;\n}\n\n.sidebar-menu-off-sm[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 5%;\n  background-color: #F2F2F2;\n  z-index: 1;\n  right: 0%;\n  top: 0;\n}\n\n.sidebar-menu-md[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 5%;\n  background-color: #F2F2F2;\n  z-index: 1;\n  right: 30%;\n  top: 0;\n}\n\n.sidebar-menu-off-md[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 5%;\n  background-color: #F2F2F2;\n  z-index: 1;\n  right: 0%;\n  top: 0;\n}\n\n.divButton[_ngcontent-%COMP%] {\n  width: 100%;\n  height: 10%;\n  border-style: solid;\n  border-color: white;\n}\n\n.button-local[_ngcontent-%COMP%] {\n  width: 100%;\n  height: 100%;\n  color: white; \n  background-color: #B6D93B;\n  background-size: 50px;\n  background-position: center;\n  text-align: center;\n  border-top-left-radius: 1px;\n  border-top-right-radius: 2px;\n  border-bottom-right-radius: 3px;\n  border-bottom-left-radius: 40px;\n}\n\n.buttonWalking[_ngcontent-%COMP%] {\n  width: 100%;\n  height: 100%;\n  color: white; \n  background: url(https://i.ibb.co/1LpnQ3f/senderismo.png) no-repeat;\n  background-color: #B6D93B;\n  background-size: 50px;\n  background-position: center;\n  text-align: center;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1lbnUtc2lkZWJhci5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0Usa0JBQWtCO0VBQ2xCLFVBQVU7RUFDVix5QkFBeUI7RUFDekIsVUFBVTtFQUNWLFVBQVU7RUFDVixNQUFNO0FBQ1I7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsVUFBVTtFQUNWLHlCQUF5QjtFQUN6QixVQUFVO0VBQ1YsU0FBUztFQUNULE1BQU07QUFDUjs7QUFFQTtFQUNFLFdBQVc7RUFDWCxZQUFZO0FBQ2Q7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsVUFBVTtFQUNWLHlCQUF5QjtFQUN6QixVQUFVO0VBQ1YsVUFBVTtFQUNWLE1BQU07QUFDUjs7QUFFQTtFQUNFLGtCQUFrQjtFQUNsQixVQUFVO0VBQ1YseUJBQXlCO0VBQ3pCLFVBQVU7RUFDVixTQUFTO0VBQ1QsTUFBTTtBQUNSOztBQUVBO0VBQ0Usa0JBQWtCO0VBQ2xCLFVBQVU7RUFDVix5QkFBeUI7RUFDekIsVUFBVTtFQUNWLFVBQVU7RUFDVixNQUFNO0FBQ1I7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsVUFBVTtFQUNWLHlCQUF5QjtFQUN6QixVQUFVO0VBQ1YsU0FBUztFQUNULE1BQU07QUFDUjs7QUFFQTtFQUNFLGtCQUFrQjtFQUNsQixVQUFVO0VBQ1YseUJBQXlCO0VBQ3pCLFVBQVU7RUFDVixVQUFVO0VBQ1YsTUFBTTtBQUNSOztBQUVBO0VBQ0Usa0JBQWtCO0VBQ2xCLFVBQVU7RUFDVix5QkFBeUI7RUFDekIsVUFBVTtFQUNWLFNBQVM7RUFDVCxNQUFNO0FBQ1I7O0FBR0E7RUFDRSxXQUFXO0VBQ1gsV0FBVztFQUNYLG1CQUFtQjtFQUNuQixtQkFBbUI7QUFDckI7O0FBRUE7RUFDRSxXQUFXO0VBQ1gsWUFBWTtFQUNaLFlBQVk7RUFDWix5QkFBeUI7RUFDekIscUJBQXFCO0VBQ3JCLDJCQUEyQjtFQUMzQixrQkFBa0I7RUFDbEIsMkJBQTJCO0VBQzNCLDRCQUE0QjtFQUM1QiwrQkFBK0I7RUFDL0IsK0JBQStCO0FBQ2pDOztBQUVBO0VBQ0UsV0FBVztFQUNYLFlBQVk7RUFDWixZQUFZO0VBQ1osa0VBQWtFO0VBQ2xFLHlCQUF5QjtFQUN6QixxQkFBcUI7RUFDckIsMkJBQTJCO0VBQzNCLGtCQUFrQjtBQUNwQiIsImZpbGUiOiJtZW51LXNpZGViYXIuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5zaWRlYmFyLW1lbnUge1xuICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIGhlaWdodDogNSU7XG4gIGJhY2tncm91bmQtY29sb3I6ICNGMkYyRjI7XG4gIHotaW5kZXg6IDE7XG4gIHJpZ2h0OiAyMSU7XG4gIHRvcDogMDtcbn1cblxuLnNpZGViYXItbWVudS1vZmYge1xuICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIGhlaWdodDogNSU7XG4gIGJhY2tncm91bmQtY29sb3I6ICNGMkYyRjI7XG4gIHotaW5kZXg6IDE7XG4gIHJpZ2h0OiAwJTtcbiAgdG9wOiAwO1xufVxuXG5idXR0b24ge1xuICB3aWR0aDogMTAwJTtcbiAgaGVpZ2h0OiAxMDAlO1xufVxuXG4uc2lkZWJhci1tZW51LXhzIHtcbiAgcG9zaXRpb246IGFic29sdXRlO1xuICBoZWlnaHQ6IDUlO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjRjJGMkYyO1xuICB6LWluZGV4OiAxO1xuICByaWdodDogODAlO1xuICB0b3A6IDA7XG59XG5cbi5zaWRlYmFyLW1lbnUtb2ZmLXhzIHtcbiAgcG9zaXRpb246IGFic29sdXRlO1xuICBoZWlnaHQ6IDUlO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjRjJGMkYyO1xuICB6LWluZGV4OiAxO1xuICByaWdodDogMCU7XG4gIHRvcDogMDtcbn1cblxuLnNpZGViYXItbWVudS1zbSB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgaGVpZ2h0OiA1JTtcbiAgYmFja2dyb3VuZC1jb2xvcjogI0YyRjJGMjtcbiAgei1pbmRleDogMTtcbiAgcmlnaHQ6IDQwJTtcbiAgdG9wOiAwO1xufVxuXG4uc2lkZWJhci1tZW51LW9mZi1zbSB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgaGVpZ2h0OiA1JTtcbiAgYmFja2dyb3VuZC1jb2xvcjogI0YyRjJGMjtcbiAgei1pbmRleDogMTtcbiAgcmlnaHQ6IDAlO1xuICB0b3A6IDA7XG59XG5cbi5zaWRlYmFyLW1lbnUtbWQge1xuICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIGhlaWdodDogNSU7XG4gIGJhY2tncm91bmQtY29sb3I6ICNGMkYyRjI7XG4gIHotaW5kZXg6IDE7XG4gIHJpZ2h0OiAzMCU7XG4gIHRvcDogMDtcbn1cblxuLnNpZGViYXItbWVudS1vZmYtbWQge1xuICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIGhlaWdodDogNSU7XG4gIGJhY2tncm91bmQtY29sb3I6ICNGMkYyRjI7XG4gIHotaW5kZXg6IDE7XG4gIHJpZ2h0OiAwJTtcbiAgdG9wOiAwO1xufVxuXG5cbi5kaXZCdXR0b24ge1xuICB3aWR0aDogMTAwJTtcbiAgaGVpZ2h0OiAxMCU7XG4gIGJvcmRlci1zdHlsZTogc29saWQ7XG4gIGJvcmRlci1jb2xvcjogd2hpdGU7XG59XG5cbi5idXR0b24tbG9jYWwge1xuICB3aWR0aDogMTAwJTtcbiAgaGVpZ2h0OiAxMDAlO1xuICBjb2xvcjogd2hpdGU7IFxuICBiYWNrZ3JvdW5kLWNvbG9yOiAjQjZEOTNCO1xuICBiYWNrZ3JvdW5kLXNpemU6IDUwcHg7XG4gIGJhY2tncm91bmQtcG9zaXRpb246IGNlbnRlcjtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBib3JkZXItdG9wLWxlZnQtcmFkaXVzOiAxcHg7XG4gIGJvcmRlci10b3AtcmlnaHQtcmFkaXVzOiAycHg7XG4gIGJvcmRlci1ib3R0b20tcmlnaHQtcmFkaXVzOiAzcHg7XG4gIGJvcmRlci1ib3R0b20tbGVmdC1yYWRpdXM6IDQwcHg7XG59XG5cbi5idXR0b25XYWxraW5nIHtcbiAgd2lkdGg6IDEwMCU7XG4gIGhlaWdodDogMTAwJTtcbiAgY29sb3I6IHdoaXRlOyBcbiAgYmFja2dyb3VuZDogdXJsKGh0dHBzOi8vaS5pYmIuY28vMUxwblEzZi9zZW5kZXJpc21vLnBuZykgbm8tcmVwZWF0O1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjQjZEOTNCO1xuICBiYWNrZ3JvdW5kLXNpemU6IDUwcHg7XG4gIGJhY2tncm91bmQtcG9zaXRpb246IGNlbnRlcjtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG5cblxuIl19 */"] });
+    } }, directives: [_angular_flex_layout_extended__WEBPACK_IMPORTED_MODULE_6__["DefaultClassDirective"], _angular_common__WEBPACK_IMPORTED_MODULE_7__["NgClass"], _angular_material_button__WEBPACK_IMPORTED_MODULE_8__["MatButton"], _angular_router__WEBPACK_IMPORTED_MODULE_1__["RouterLinkActive"]], styles: [".sidebar-menu[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 5%;\r\n  background-color: #F2F2F2;\r\n  z-index: 1;\r\n  right: 21%;\r\n  top: 0;\r\n}\r\n\r\n.sidebar-menu-off[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 5%;\r\n  background-color: #F2F2F2;\r\n  z-index: 1;\r\n  right: 0%;\r\n  top: 0;\r\n}\r\n\r\nbutton[_ngcontent-%COMP%] {\r\n  width: 100%;\r\n  height: 100%;\r\n}\r\n\r\n.sidebar-menu-xs[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 5%;\r\n  background-color: #F2F2F2;\r\n  z-index: 1;\r\n  right: 80%;\r\n  top: 0;\r\n}\r\n\r\n.sidebar-menu-off-xs[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 5%;\r\n  background-color: #F2F2F2;\r\n  z-index: 1;\r\n  right: 0%;\r\n  top: 0;\r\n}\r\n\r\n.sidebar-menu-sm[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 5%;\r\n  background-color: #F2F2F2;\r\n  z-index: 1;\r\n  right: 40%;\r\n  top: 0;\r\n}\r\n\r\n.sidebar-menu-off-sm[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 5%;\r\n  background-color: #F2F2F2;\r\n  z-index: 1;\r\n  right: 0%;\r\n  top: 0;\r\n}\r\n\r\n.sidebar-menu-md[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 5%;\r\n  background-color: #F2F2F2;\r\n  z-index: 1;\r\n  right: 30%;\r\n  top: 0;\r\n}\r\n\r\n.sidebar-menu-off-md[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 5%;\r\n  background-color: #F2F2F2;\r\n  z-index: 1;\r\n  right: 0%;\r\n  top: 0;\r\n}\r\n\r\n.divButton[_ngcontent-%COMP%] {\r\n  width: 100%;\r\n  height: 10%;\r\n  border-style: solid;\r\n  border-color: white;\r\n}\r\n\r\n.button-local[_ngcontent-%COMP%] {\r\n  width: 100%;\r\n  height: 100%;\r\n  color: white; \r\n  background-color: #B6D93B;\r\n  background-size: 50px;\r\n  background-position: center;\r\n  text-align: center;\r\n  border-top-left-radius: 1px;\r\n  border-top-right-radius: 2px;\r\n  border-bottom-right-radius: 3px;\r\n  border-bottom-left-radius: 40px;\r\n}\r\n\r\n.buttonWalking[_ngcontent-%COMP%] {\r\n  width: 100%;\r\n  height: 100%;\r\n  color: white; \r\n  background: url(https://i.ibb.co/1LpnQ3f/senderismo.png) no-repeat;\r\n  background-color: #B6D93B;\r\n  background-size: 50px;\r\n  background-position: center;\r\n  text-align: center;\r\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1lbnUtc2lkZWJhci5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0Usa0JBQWtCO0VBQ2xCLFVBQVU7RUFDVix5QkFBeUI7RUFDekIsVUFBVTtFQUNWLFVBQVU7RUFDVixNQUFNO0FBQ1I7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsVUFBVTtFQUNWLHlCQUF5QjtFQUN6QixVQUFVO0VBQ1YsU0FBUztFQUNULE1BQU07QUFDUjs7QUFFQTtFQUNFLFdBQVc7RUFDWCxZQUFZO0FBQ2Q7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsVUFBVTtFQUNWLHlCQUF5QjtFQUN6QixVQUFVO0VBQ1YsVUFBVTtFQUNWLE1BQU07QUFDUjs7QUFFQTtFQUNFLGtCQUFrQjtFQUNsQixVQUFVO0VBQ1YseUJBQXlCO0VBQ3pCLFVBQVU7RUFDVixTQUFTO0VBQ1QsTUFBTTtBQUNSOztBQUVBO0VBQ0Usa0JBQWtCO0VBQ2xCLFVBQVU7RUFDVix5QkFBeUI7RUFDekIsVUFBVTtFQUNWLFVBQVU7RUFDVixNQUFNO0FBQ1I7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsVUFBVTtFQUNWLHlCQUF5QjtFQUN6QixVQUFVO0VBQ1YsU0FBUztFQUNULE1BQU07QUFDUjs7QUFFQTtFQUNFLGtCQUFrQjtFQUNsQixVQUFVO0VBQ1YseUJBQXlCO0VBQ3pCLFVBQVU7RUFDVixVQUFVO0VBQ1YsTUFBTTtBQUNSOztBQUVBO0VBQ0Usa0JBQWtCO0VBQ2xCLFVBQVU7RUFDVix5QkFBeUI7RUFDekIsVUFBVTtFQUNWLFNBQVM7RUFDVCxNQUFNO0FBQ1I7O0FBR0E7RUFDRSxXQUFXO0VBQ1gsV0FBVztFQUNYLG1CQUFtQjtFQUNuQixtQkFBbUI7QUFDckI7O0FBRUE7RUFDRSxXQUFXO0VBQ1gsWUFBWTtFQUNaLFlBQVk7RUFDWix5QkFBeUI7RUFDekIscUJBQXFCO0VBQ3JCLDJCQUEyQjtFQUMzQixrQkFBa0I7RUFDbEIsMkJBQTJCO0VBQzNCLDRCQUE0QjtFQUM1QiwrQkFBK0I7RUFDL0IsK0JBQStCO0FBQ2pDOztBQUVBO0VBQ0UsV0FBVztFQUNYLFlBQVk7RUFDWixZQUFZO0VBQ1osa0VBQWtFO0VBQ2xFLHlCQUF5QjtFQUN6QixxQkFBcUI7RUFDckIsMkJBQTJCO0VBQzNCLGtCQUFrQjtBQUNwQiIsImZpbGUiOiJtZW51LXNpZGViYXIuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5zaWRlYmFyLW1lbnUge1xyXG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcclxuICBoZWlnaHQ6IDUlO1xyXG4gIGJhY2tncm91bmQtY29sb3I6ICNGMkYyRjI7XHJcbiAgei1pbmRleDogMTtcclxuICByaWdodDogMjElO1xyXG4gIHRvcDogMDtcclxufVxyXG5cclxuLnNpZGViYXItbWVudS1vZmYge1xyXG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcclxuICBoZWlnaHQ6IDUlO1xyXG4gIGJhY2tncm91bmQtY29sb3I6ICNGMkYyRjI7XHJcbiAgei1pbmRleDogMTtcclxuICByaWdodDogMCU7XHJcbiAgdG9wOiAwO1xyXG59XHJcblxyXG5idXR0b24ge1xyXG4gIHdpZHRoOiAxMDAlO1xyXG4gIGhlaWdodDogMTAwJTtcclxufVxyXG5cclxuLnNpZGViYXItbWVudS14cyB7XHJcbiAgcG9zaXRpb246IGFic29sdXRlO1xyXG4gIGhlaWdodDogNSU7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI0YyRjJGMjtcclxuICB6LWluZGV4OiAxO1xyXG4gIHJpZ2h0OiA4MCU7XHJcbiAgdG9wOiAwO1xyXG59XHJcblxyXG4uc2lkZWJhci1tZW51LW9mZi14cyB7XHJcbiAgcG9zaXRpb246IGFic29sdXRlO1xyXG4gIGhlaWdodDogNSU7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI0YyRjJGMjtcclxuICB6LWluZGV4OiAxO1xyXG4gIHJpZ2h0OiAwJTtcclxuICB0b3A6IDA7XHJcbn1cclxuXHJcbi5zaWRlYmFyLW1lbnUtc20ge1xyXG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcclxuICBoZWlnaHQ6IDUlO1xyXG4gIGJhY2tncm91bmQtY29sb3I6ICNGMkYyRjI7XHJcbiAgei1pbmRleDogMTtcclxuICByaWdodDogNDAlO1xyXG4gIHRvcDogMDtcclxufVxyXG5cclxuLnNpZGViYXItbWVudS1vZmYtc20ge1xyXG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcclxuICBoZWlnaHQ6IDUlO1xyXG4gIGJhY2tncm91bmQtY29sb3I6ICNGMkYyRjI7XHJcbiAgei1pbmRleDogMTtcclxuICByaWdodDogMCU7XHJcbiAgdG9wOiAwO1xyXG59XHJcblxyXG4uc2lkZWJhci1tZW51LW1kIHtcclxuICBwb3NpdGlvbjogYWJzb2x1dGU7XHJcbiAgaGVpZ2h0OiA1JTtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiAjRjJGMkYyO1xyXG4gIHotaW5kZXg6IDE7XHJcbiAgcmlnaHQ6IDMwJTtcclxuICB0b3A6IDA7XHJcbn1cclxuXHJcbi5zaWRlYmFyLW1lbnUtb2ZmLW1kIHtcclxuICBwb3NpdGlvbjogYWJzb2x1dGU7XHJcbiAgaGVpZ2h0OiA1JTtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiAjRjJGMkYyO1xyXG4gIHotaW5kZXg6IDE7XHJcbiAgcmlnaHQ6IDAlO1xyXG4gIHRvcDogMDtcclxufVxyXG5cclxuXHJcbi5kaXZCdXR0b24ge1xyXG4gIHdpZHRoOiAxMDAlO1xyXG4gIGhlaWdodDogMTAlO1xyXG4gIGJvcmRlci1zdHlsZTogc29saWQ7XHJcbiAgYm9yZGVyLWNvbG9yOiB3aGl0ZTtcclxufVxyXG5cclxuLmJ1dHRvbi1sb2NhbCB7XHJcbiAgd2lkdGg6IDEwMCU7XHJcbiAgaGVpZ2h0OiAxMDAlO1xyXG4gIGNvbG9yOiB3aGl0ZTsgXHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI0I2RDkzQjtcclxuICBiYWNrZ3JvdW5kLXNpemU6IDUwcHg7XHJcbiAgYmFja2dyb3VuZC1wb3NpdGlvbjogY2VudGVyO1xyXG4gIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICBib3JkZXItdG9wLWxlZnQtcmFkaXVzOiAxcHg7XHJcbiAgYm9yZGVyLXRvcC1yaWdodC1yYWRpdXM6IDJweDtcclxuICBib3JkZXItYm90dG9tLXJpZ2h0LXJhZGl1czogM3B4O1xyXG4gIGJvcmRlci1ib3R0b20tbGVmdC1yYWRpdXM6IDQwcHg7XHJcbn1cclxuXHJcbi5idXR0b25XYWxraW5nIHtcclxuICB3aWR0aDogMTAwJTtcclxuICBoZWlnaHQ6IDEwMCU7XHJcbiAgY29sb3I6IHdoaXRlOyBcclxuICBiYWNrZ3JvdW5kOiB1cmwoaHR0cHM6Ly9pLmliYi5jby8xTHBuUTNmL3NlbmRlcmlzbW8ucG5nKSBuby1yZXBlYXQ7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI0I2RDkzQjtcclxuICBiYWNrZ3JvdW5kLXNpemU6IDUwcHg7XHJcbiAgYmFja2dyb3VuZC1wb3NpdGlvbjogY2VudGVyO1xyXG4gIHRleHQtYWxpZ246IGNlbnRlcjtcclxufVxyXG5cclxuXHJcblxyXG4iXX0= */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MenuSidebarComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -1030,7 +1085,7 @@ SidebarContentComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵ
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngClass", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction2"](4, _c0, !ctx.show, ctx.show))("ngClass.xs", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction2"](7, _c1, !ctx.show, ctx.show))("ngClass.sm", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction2"](10, _c2, !ctx.show, ctx.show))("ngClass.md", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction2"](13, _c3, !ctx.show, ctx.show));
-    } }, directives: [_angular_flex_layout_extended__WEBPACK_IMPORTED_MODULE_2__["DefaultClassDirective"], _angular_common__WEBPACK_IMPORTED_MODULE_3__["NgClass"], _angular_router__WEBPACK_IMPORTED_MODULE_4__["RouterOutlet"]], styles: [".sidebar-content-off[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 100%;\n  background: white;\n  right: -20%;\n  display: none;\n  top: 0;\n}\n\n.sidebar-content[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 100%;\n  width: 21%;\n  background-color: white;\n  z-index: 0;\n  right: 0%;\n  top: 0;\n}\n\n.sidebar-content-off-xs[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 100%;\n  background: white;\n  right: -80%;\n  display: none;\n  top: 0;\n}\n\n.sidebar-content-xs[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 100%;\n  width: 80%;\n  background-color: white;\n  z-index: 0;\n  right: 0%;\n  top: 0;\n}\n\n.sidebar-content-off-sm[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 100%;\n  background: white;\n  right: -40%;\n  display: none;\n  top: 0;\n}\n\n.sidebar-content-sm[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 100%;\n  width: 40%;\n  background-color: white;\n  z-index: 0;\n  right: 0%;\n  top: 0;\n}\n\n.sidebar-content-off-md[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 100%;\n  background: white;\n  right: -30%;\n  display: none;\n  top: 0;\n}\n\n.sidebar-content-md[_ngcontent-%COMP%] {\n  position: absolute;\n  height: 100%;\n  width: 30%;\n  background-color: white;\n  z-index: 0;\n  right: 0%;\n  top: 0;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNpZGViYXItY29udGVudC5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0Usa0JBQWtCO0VBQ2xCLFlBQVk7RUFDWixpQkFBaUI7RUFDakIsV0FBVztFQUNYLGFBQWE7RUFDYixNQUFNO0FBQ1I7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsWUFBWTtFQUNaLFVBQVU7RUFDVix1QkFBdUI7RUFDdkIsVUFBVTtFQUNWLFNBQVM7RUFDVCxNQUFNO0FBQ1I7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsWUFBWTtFQUNaLGlCQUFpQjtFQUNqQixXQUFXO0VBQ1gsYUFBYTtFQUNiLE1BQU07QUFDUjs7QUFFQTtFQUNFLGtCQUFrQjtFQUNsQixZQUFZO0VBQ1osVUFBVTtFQUNWLHVCQUF1QjtFQUN2QixVQUFVO0VBQ1YsU0FBUztFQUNULE1BQU07QUFDUjs7QUFFQTtFQUNFLGtCQUFrQjtFQUNsQixZQUFZO0VBQ1osaUJBQWlCO0VBQ2pCLFdBQVc7RUFDWCxhQUFhO0VBQ2IsTUFBTTtBQUNSOztBQUVBO0VBQ0Usa0JBQWtCO0VBQ2xCLFlBQVk7RUFDWixVQUFVO0VBQ1YsdUJBQXVCO0VBQ3ZCLFVBQVU7RUFDVixTQUFTO0VBQ1QsTUFBTTtBQUNSOztBQUVBO0VBQ0Usa0JBQWtCO0VBQ2xCLFlBQVk7RUFDWixpQkFBaUI7RUFDakIsV0FBVztFQUNYLGFBQWE7RUFDYixNQUFNO0FBQ1I7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsWUFBWTtFQUNaLFVBQVU7RUFDVix1QkFBdUI7RUFDdkIsVUFBVTtFQUNWLFNBQVM7RUFDVCxNQUFNO0FBQ1IiLCJmaWxlIjoic2lkZWJhci1jb250ZW50LmNvbXBvbmVudC5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIuc2lkZWJhci1jb250ZW50LW9mZiB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgaGVpZ2h0OiAxMDAlO1xuICBiYWNrZ3JvdW5kOiB3aGl0ZTtcbiAgcmlnaHQ6IC0yMCU7XG4gIGRpc3BsYXk6IG5vbmU7XG4gIHRvcDogMDtcbn1cblxuLnNpZGViYXItY29udGVudCB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgaGVpZ2h0OiAxMDAlO1xuICB3aWR0aDogMjElO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcbiAgei1pbmRleDogMDtcbiAgcmlnaHQ6IDAlO1xuICB0b3A6IDA7XG59XG5cbi5zaWRlYmFyLWNvbnRlbnQtb2ZmLXhzIHtcbiAgcG9zaXRpb246IGFic29sdXRlO1xuICBoZWlnaHQ6IDEwMCU7XG4gIGJhY2tncm91bmQ6IHdoaXRlO1xuICByaWdodDogLTgwJTtcbiAgZGlzcGxheTogbm9uZTtcbiAgdG9wOiAwO1xufVxuXG4uc2lkZWJhci1jb250ZW50LXhzIHtcbiAgcG9zaXRpb246IGFic29sdXRlO1xuICBoZWlnaHQ6IDEwMCU7XG4gIHdpZHRoOiA4MCU7XG4gIGJhY2tncm91bmQtY29sb3I6IHdoaXRlO1xuICB6LWluZGV4OiAwO1xuICByaWdodDogMCU7XG4gIHRvcDogMDtcbn1cblxuLnNpZGViYXItY29udGVudC1vZmYtc20ge1xuICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIGhlaWdodDogMTAwJTtcbiAgYmFja2dyb3VuZDogd2hpdGU7XG4gIHJpZ2h0OiAtNDAlO1xuICBkaXNwbGF5OiBub25lO1xuICB0b3A6IDA7XG59XG5cbi5zaWRlYmFyLWNvbnRlbnQtc20ge1xuICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIGhlaWdodDogMTAwJTtcbiAgd2lkdGg6IDQwJTtcbiAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XG4gIHotaW5kZXg6IDA7XG4gIHJpZ2h0OiAwJTtcbiAgdG9wOiAwO1xufVxuXG4uc2lkZWJhci1jb250ZW50LW9mZi1tZCB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgaGVpZ2h0OiAxMDAlO1xuICBiYWNrZ3JvdW5kOiB3aGl0ZTtcbiAgcmlnaHQ6IC0zMCU7XG4gIGRpc3BsYXk6IG5vbmU7XG4gIHRvcDogMDtcbn1cblxuLnNpZGViYXItY29udGVudC1tZCB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgaGVpZ2h0OiAxMDAlO1xuICB3aWR0aDogMzAlO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcbiAgei1pbmRleDogMDtcbiAgcmlnaHQ6IDAlO1xuICB0b3A6IDA7XG59Il19 */"] });
+    } }, directives: [_angular_flex_layout_extended__WEBPACK_IMPORTED_MODULE_2__["DefaultClassDirective"], _angular_common__WEBPACK_IMPORTED_MODULE_3__["NgClass"], _angular_router__WEBPACK_IMPORTED_MODULE_4__["RouterOutlet"]], styles: [".sidebar-content-off[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 100%;\r\n  background: white;\r\n  right: -20%;\r\n  display: none;\r\n  top: 0;\r\n}\r\n\r\n.sidebar-content[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 100%;\r\n  width: 21%;\r\n  background-color: white;\r\n  z-index: 0;\r\n  right: 0%;\r\n  top: 0;\r\n}\r\n\r\n.sidebar-content-off-xs[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 100%;\r\n  background: white;\r\n  right: -80%;\r\n  display: none;\r\n  top: 0;\r\n}\r\n\r\n.sidebar-content-xs[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 100%;\r\n  width: 80%;\r\n  background-color: white;\r\n  z-index: 0;\r\n  right: 0%;\r\n  top: 0;\r\n}\r\n\r\n.sidebar-content-off-sm[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 100%;\r\n  background: white;\r\n  right: -40%;\r\n  display: none;\r\n  top: 0;\r\n}\r\n\r\n.sidebar-content-sm[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 100%;\r\n  width: 40%;\r\n  background-color: white;\r\n  z-index: 0;\r\n  right: 0%;\r\n  top: 0;\r\n}\r\n\r\n.sidebar-content-off-md[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 100%;\r\n  background: white;\r\n  right: -30%;\r\n  display: none;\r\n  top: 0;\r\n}\r\n\r\n.sidebar-content-md[_ngcontent-%COMP%] {\r\n  position: absolute;\r\n  height: 100%;\r\n  width: 30%;\r\n  background-color: white;\r\n  z-index: 0;\r\n  right: 0%;\r\n  top: 0;\r\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNpZGViYXItY29udGVudC5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0Usa0JBQWtCO0VBQ2xCLFlBQVk7RUFDWixpQkFBaUI7RUFDakIsV0FBVztFQUNYLGFBQWE7RUFDYixNQUFNO0FBQ1I7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsWUFBWTtFQUNaLFVBQVU7RUFDVix1QkFBdUI7RUFDdkIsVUFBVTtFQUNWLFNBQVM7RUFDVCxNQUFNO0FBQ1I7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsWUFBWTtFQUNaLGlCQUFpQjtFQUNqQixXQUFXO0VBQ1gsYUFBYTtFQUNiLE1BQU07QUFDUjs7QUFFQTtFQUNFLGtCQUFrQjtFQUNsQixZQUFZO0VBQ1osVUFBVTtFQUNWLHVCQUF1QjtFQUN2QixVQUFVO0VBQ1YsU0FBUztFQUNULE1BQU07QUFDUjs7QUFFQTtFQUNFLGtCQUFrQjtFQUNsQixZQUFZO0VBQ1osaUJBQWlCO0VBQ2pCLFdBQVc7RUFDWCxhQUFhO0VBQ2IsTUFBTTtBQUNSOztBQUVBO0VBQ0Usa0JBQWtCO0VBQ2xCLFlBQVk7RUFDWixVQUFVO0VBQ1YsdUJBQXVCO0VBQ3ZCLFVBQVU7RUFDVixTQUFTO0VBQ1QsTUFBTTtBQUNSOztBQUVBO0VBQ0Usa0JBQWtCO0VBQ2xCLFlBQVk7RUFDWixpQkFBaUI7RUFDakIsV0FBVztFQUNYLGFBQWE7RUFDYixNQUFNO0FBQ1I7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsWUFBWTtFQUNaLFVBQVU7RUFDVix1QkFBdUI7RUFDdkIsVUFBVTtFQUNWLFNBQVM7RUFDVCxNQUFNO0FBQ1IiLCJmaWxlIjoic2lkZWJhci1jb250ZW50LmNvbXBvbmVudC5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIuc2lkZWJhci1jb250ZW50LW9mZiB7XHJcbiAgcG9zaXRpb246IGFic29sdXRlO1xyXG4gIGhlaWdodDogMTAwJTtcclxuICBiYWNrZ3JvdW5kOiB3aGl0ZTtcclxuICByaWdodDogLTIwJTtcclxuICBkaXNwbGF5OiBub25lO1xyXG4gIHRvcDogMDtcclxufVxyXG5cclxuLnNpZGViYXItY29udGVudCB7XHJcbiAgcG9zaXRpb246IGFic29sdXRlO1xyXG4gIGhlaWdodDogMTAwJTtcclxuICB3aWR0aDogMjElO1xyXG4gIGJhY2tncm91bmQtY29sb3I6IHdoaXRlO1xyXG4gIHotaW5kZXg6IDA7XHJcbiAgcmlnaHQ6IDAlO1xyXG4gIHRvcDogMDtcclxufVxyXG5cclxuLnNpZGViYXItY29udGVudC1vZmYteHMge1xyXG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcclxuICBoZWlnaHQ6IDEwMCU7XHJcbiAgYmFja2dyb3VuZDogd2hpdGU7XHJcbiAgcmlnaHQ6IC04MCU7XHJcbiAgZGlzcGxheTogbm9uZTtcclxuICB0b3A6IDA7XHJcbn1cclxuXHJcbi5zaWRlYmFyLWNvbnRlbnQteHMge1xyXG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcclxuICBoZWlnaHQ6IDEwMCU7XHJcbiAgd2lkdGg6IDgwJTtcclxuICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTtcclxuICB6LWluZGV4OiAwO1xyXG4gIHJpZ2h0OiAwJTtcclxuICB0b3A6IDA7XHJcbn1cclxuXHJcbi5zaWRlYmFyLWNvbnRlbnQtb2ZmLXNtIHtcclxuICBwb3NpdGlvbjogYWJzb2x1dGU7XHJcbiAgaGVpZ2h0OiAxMDAlO1xyXG4gIGJhY2tncm91bmQ6IHdoaXRlO1xyXG4gIHJpZ2h0OiAtNDAlO1xyXG4gIGRpc3BsYXk6IG5vbmU7XHJcbiAgdG9wOiAwO1xyXG59XHJcblxyXG4uc2lkZWJhci1jb250ZW50LXNtIHtcclxuICBwb3NpdGlvbjogYWJzb2x1dGU7XHJcbiAgaGVpZ2h0OiAxMDAlO1xyXG4gIHdpZHRoOiA0MCU7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7XHJcbiAgei1pbmRleDogMDtcclxuICByaWdodDogMCU7XHJcbiAgdG9wOiAwO1xyXG59XHJcblxyXG4uc2lkZWJhci1jb250ZW50LW9mZi1tZCB7XHJcbiAgcG9zaXRpb246IGFic29sdXRlO1xyXG4gIGhlaWdodDogMTAwJTtcclxuICBiYWNrZ3JvdW5kOiB3aGl0ZTtcclxuICByaWdodDogLTMwJTtcclxuICBkaXNwbGF5OiBub25lO1xyXG4gIHRvcDogMDtcclxufVxyXG5cclxuLnNpZGViYXItY29udGVudC1tZCB7XHJcbiAgcG9zaXRpb246IGFic29sdXRlO1xyXG4gIGhlaWdodDogMTAwJTtcclxuICB3aWR0aDogMzAlO1xyXG4gIGJhY2tncm91bmQtY29sb3I6IHdoaXRlO1xyXG4gIHotaW5kZXg6IDA7XHJcbiAgcmlnaHQ6IDAlO1xyXG4gIHRvcDogMDtcclxufSJdfQ== */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](SidebarContentComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -1118,11 +1173,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AppComponent", function() { return AppComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
 /* harmony import */ var _angular_flex_layout__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/flex-layout */ "YUcS");
-/* harmony import */ var _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/flex-layout/flex */ "XiUz");
-/* harmony import */ var _core_header_header_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./core/header/header.component */ "8rb8");
-/* harmony import */ var _core_map_map_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./core/map/map.component */ "3Mpc");
-/* harmony import */ var _core_menu_sidebar_menu_sidebar_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./core/menu-sidebar/menu-sidebar.component */ "Hgpz");
-/* harmony import */ var _core_sidebar_content_sidebar_content_sidebar_content_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./core/sidebar-content/sidebar-content/sidebar-content.component */ "OnFr");
+/* harmony import */ var _services_sidebar_menu_service_sidebar_menu_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./services/sidebar-menu-service/sidebar-menu.service */ "kzSU");
+/* harmony import */ var _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/flex-layout/flex */ "XiUz");
+/* harmony import */ var _core_header_header_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./core/header/header.component */ "8rb8");
+/* harmony import */ var _core_map_map_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./core/map/map.component */ "3Mpc");
+/* harmony import */ var _core_menu_sidebar_menu_sidebar_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./core/menu-sidebar/menu-sidebar.component */ "Hgpz");
+/* harmony import */ var _core_sidebar_content_sidebar_content_sidebar_content_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./core/sidebar-content/sidebar-content/sidebar-content.component */ "OnFr");
+
 
 
 
@@ -1132,20 +1189,24 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class AppComponent {
-    constructor(mediaObserver) {
+    constructor(mediaObserver, SidebarService) {
         this.mediaObserver = mediaObserver;
+        this.SidebarService = SidebarService;
     }
     ngOnInit() {
         this.mediaSub = this.mediaObserver.media$.subscribe((result) => {
             console.log(result.mqAlias);
             this.deviceXs = result.mqAlias === 'xs' ? true : false;
+            if (this.deviceXs) {
+                this.SidebarService.sidebarChange(true);
+            }
         });
     }
     ngOnDestroy() {
         this.mediaSub.unsubscribe();
     }
 }
-AppComponent.ɵfac = function AppComponent_Factory(t) { return new (t || AppComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_flex_layout__WEBPACK_IMPORTED_MODULE_1__["MediaObserver"])); };
+AppComponent.ɵfac = function AppComponent_Factory(t) { return new (t || AppComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_flex_layout__WEBPACK_IMPORTED_MODULE_1__["MediaObserver"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_services_sidebar_menu_service_sidebar_menu_service__WEBPACK_IMPORTED_MODULE_2__["SidebarMenuService"])); };
 AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: AppComponent, selectors: [["app-root"]], decls: 7, vars: 0, consts: [["fxLayout", "column"], ["fxLayout", "row", 2, "width", "100%"], [2, "width", "100%"]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 1);
@@ -1157,7 +1218,7 @@ AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCompo
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](6, "app-sidebar-content");
-    } }, directives: [_angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_2__["DefaultLayoutDirective"], _core_header_header_component__WEBPACK_IMPORTED_MODULE_3__["HeaderComponent"], _core_map_map_component__WEBPACK_IMPORTED_MODULE_4__["MapComponent"], _core_menu_sidebar_menu_sidebar_component__WEBPACK_IMPORTED_MODULE_5__["MenuSidebarComponent"], _core_sidebar_content_sidebar_content_sidebar_content_component__WEBPACK_IMPORTED_MODULE_6__["SidebarContentComponent"]], styles: ["\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJhcHAuY29tcG9uZW50LmNzcyJ9 */"] });
+    } }, directives: [_angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_3__["DefaultLayoutDirective"], _core_header_header_component__WEBPACK_IMPORTED_MODULE_4__["HeaderComponent"], _core_map_map_component__WEBPACK_IMPORTED_MODULE_5__["MapComponent"], _core_menu_sidebar_menu_sidebar_component__WEBPACK_IMPORTED_MODULE_6__["MenuSidebarComponent"], _core_sidebar_content_sidebar_content_sidebar_content_component__WEBPACK_IMPORTED_MODULE_7__["SidebarContentComponent"]], styles: ["\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJhcHAuY29tcG9uZW50LmNzcyJ9 */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](AppComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -1165,7 +1226,7 @@ AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCompo
                 templateUrl: './app.component.html',
                 styleUrls: ['./app.component.css'],
             }]
-    }], function () { return [{ type: _angular_flex_layout__WEBPACK_IMPORTED_MODULE_1__["MediaObserver"] }]; }, null); })();
+    }], function () { return [{ type: _angular_flex_layout__WEBPACK_IMPORTED_MODULE_1__["MediaObserver"] }, { type: _services_sidebar_menu_service_sidebar_menu_service__WEBPACK_IMPORTED_MODULE_2__["SidebarMenuService"] }]; }, null); })();
 
 
 /***/ }),
@@ -1202,6 +1263,10 @@ class MapSidebarService {
         this.filtersToMapChangesWalking$ = this.filtersToMapChangesWalking.asObservable();
         this.formDetailPage = new rxjs__WEBPACK_IMPORTED_MODULE_1__["BehaviorSubject"](false);
         this.formDetailPage$ = this.formDetailPage.asObservable();
+        this.requiredUserLocation = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+        this.requiredUserLocation$ = this.requiredUserLocation.asObservable();
+        this.isLoadingLogo = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+        this.isLoadingLogo$ = this.isLoadingLogo.asObservable();
     }
     filtersToMap(data) {
         this.filtersToMapChanges.next(data);
@@ -1220,6 +1285,12 @@ class MapSidebarService {
     }
     sendDataFromMap(data) {
         this.dataToLocalProductLayer.next(data);
+    }
+    requestUserLocation(data) {
+        this.requiredUserLocation.next(data);
+    }
+    startIsLoadingLogo(data) {
+        this.isLoadingLogo.next(data);
     }
 }
 MapSidebarService.ɵfac = function MapSidebarService_Factory(t) { return new (t || MapSidebarService)(); };
@@ -1303,18 +1374,20 @@ class AppModule {
 AppModule.ɵmod = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineNgModule"]({ type: AppModule, bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_3__["AppComponent"]] });
 AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector"]({ factory: function AppModule_Factory(t) { return new (t || AppModule)(); }, providers: [_services_sidebar_menu_service_sidebar_menu_service__WEBPACK_IMPORTED_MODULE_8__["SidebarMenuService"], _services_data_map_service_data_map_service_service__WEBPACK_IMPORTED_MODULE_10__["DataMapServiceService"], src_app_services_map_sidebar_map_sidebar_service__WEBPACK_IMPORTED_MODULE_11__["MapSidebarService"]], imports: [[
             _angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
+            _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_5__["BrowserAnimationsModule"],
             _core_core_module__WEBPACK_IMPORTED_MODULE_2__["CoreModule"],
             _ng_bootstrap_ng_bootstrap__WEBPACK_IMPORTED_MODULE_4__["NgbModule"],
-            _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_5__["NoopAnimationsModule"],
+            //NoopAnimationsModule,
             _shared_shared_module__WEBPACK_IMPORTED_MODULE_6__["SharedModule"],
             _app_routing_module__WEBPACK_IMPORTED_MODULE_7__["AppRoutingModule"],
             _angular_google_maps__WEBPACK_IMPORTED_MODULE_12__["GoogleMapsModule"]
         ]] });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵsetNgModuleScope"](AppModule, { declarations: [_app_component__WEBPACK_IMPORTED_MODULE_3__["AppComponent"],
         _modules_home_components_home_home_component__WEBPACK_IMPORTED_MODULE_9__["HomeComponent"]], imports: [_angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
+        _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_5__["BrowserAnimationsModule"],
         _core_core_module__WEBPACK_IMPORTED_MODULE_2__["CoreModule"],
         _ng_bootstrap_ng_bootstrap__WEBPACK_IMPORTED_MODULE_4__["NgbModule"],
-        _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_5__["NoopAnimationsModule"],
+        //NoopAnimationsModule,
         _shared_shared_module__WEBPACK_IMPORTED_MODULE_6__["SharedModule"],
         _app_routing_module__WEBPACK_IMPORTED_MODULE_7__["AppRoutingModule"],
         _angular_google_maps__WEBPACK_IMPORTED_MODULE_12__["GoogleMapsModule"]] }); })();
@@ -1327,9 +1400,10 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
                 ],
                 imports: [
                     _angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
+                    _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_5__["BrowserAnimationsModule"],
                     _core_core_module__WEBPACK_IMPORTED_MODULE_2__["CoreModule"],
                     _ng_bootstrap_ng_bootstrap__WEBPACK_IMPORTED_MODULE_4__["NgbModule"],
-                    _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_5__["NoopAnimationsModule"],
+                    //NoopAnimationsModule,
                     _shared_shared_module__WEBPACK_IMPORTED_MODULE_6__["SharedModule"],
                     _app_routing_module__WEBPACK_IMPORTED_MODULE_7__["AppRoutingModule"],
                     _angular_google_maps__WEBPACK_IMPORTED_MODULE_12__["GoogleMapsModule"]
@@ -1363,9 +1437,9 @@ class SidebarMenuService {
     constructor() {
         this.sidebarView = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
         this.sidebarView$ = this.sidebarView.asObservable();
-        //Change to Subject 
-        this.sidebarViewChange$ = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
     }
+    //Change to Subject 
+    // sidebarViewChange$ = new EventEmitter<boolean>();
     sidebarChange(show) {
         this.sidebarView.next(show);
     }
@@ -1514,7 +1588,7 @@ GoogleMapDialogComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵ�
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.markers);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("checked", true);
-    } }, directives: [_angular_google_maps__WEBPACK_IMPORTED_MODULE_1__["GoogleMap"], _angular_common__WEBPACK_IMPORTED_MODULE_3__["NgForOf"], _angular_material_radio__WEBPACK_IMPORTED_MODULE_4__["MatRadioGroup"], _angular_material_radio__WEBPACK_IMPORTED_MODULE_4__["MatRadioButton"], _angular_material_dialog__WEBPACK_IMPORTED_MODULE_2__["MatDialogActions"], _angular_material_button__WEBPACK_IMPORTED_MODULE_5__["MatButton"], _angular_material_dialog__WEBPACK_IMPORTED_MODULE_2__["MatDialogClose"], _angular_google_maps__WEBPACK_IMPORTED_MODULE_1__["MapMarker"]], styles: [".map-container{\n    width: 70% !important;\n    height: 100%;\n    margin-top: 10px;\n}\n\n.googleMap[_ngcontent-%COMP%]{\n    display: flex;\n    flex-direction: row;\n}\n\n#indicators[_ngcontent-%COMP%]{\n    overflow-y: scroll;\n    max-height: 500px;\n}\n\n.tavelModeSwitch[_ngcontent-%COMP%]{\n    display: flex;\n    flex-direction: row;\n    justify-content: center;\n    align-items: center;\n}\n\n.drivingOption[_ngcontent-%COMP%]{\n    margin-right: 10px;\n}\n\n.bicyclingOption[_ngcontent-%COMP%]{\n    margin-right: 10px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImdvb2dsZS1tYXAtZGlhbG9nLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7SUFDSSxxQkFBcUI7SUFDckIsWUFBWTtJQUNaLGdCQUFnQjtBQUNwQjs7QUFFQTtJQUNJLGFBQWE7SUFDYixtQkFBbUI7QUFDdkI7O0FBRUE7SUFDSSxrQkFBa0I7SUFDbEIsaUJBQWlCO0FBQ3JCOztBQUVBO0lBQ0ksYUFBYTtJQUNiLG1CQUFtQjtJQUNuQix1QkFBdUI7SUFDdkIsbUJBQW1CO0FBQ3ZCOztBQUVBO0lBQ0ksa0JBQWtCO0FBQ3RCOztBQUVBO0lBQ0ksa0JBQWtCO0FBQ3RCIiwiZmlsZSI6Imdvb2dsZS1tYXAtZGlhbG9nLmNvbXBvbmVudC5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyI6Om5nLWRlZXAgLm1hcC1jb250YWluZXJ7XG4gICAgd2lkdGg6IDcwJSAhaW1wb3J0YW50O1xuICAgIGhlaWdodDogMTAwJTtcbiAgICBtYXJnaW4tdG9wOiAxMHB4O1xufVxuXG4uZ29vZ2xlTWFwe1xuICAgIGRpc3BsYXk6IGZsZXg7XG4gICAgZmxleC1kaXJlY3Rpb246IHJvdztcbn1cblxuI2luZGljYXRvcnN7XG4gICAgb3ZlcmZsb3cteTogc2Nyb2xsO1xuICAgIG1heC1oZWlnaHQ6IDUwMHB4O1xufVxuXG4udGF2ZWxNb2RlU3dpdGNoe1xuICAgIGRpc3BsYXk6IGZsZXg7XG4gICAgZmxleC1kaXJlY3Rpb246IHJvdztcbiAgICBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRlcjtcbiAgICBhbGlnbi1pdGVtczogY2VudGVyO1xufVxuXG4uZHJpdmluZ09wdGlvbntcbiAgICBtYXJnaW4tcmlnaHQ6IDEwcHg7XG59XG5cbi5iaWN5Y2xpbmdPcHRpb257XG4gICAgbWFyZ2luLXJpZ2h0OiAxMHB4O1xufSJdfQ== */"] });
+    } }, directives: [_angular_google_maps__WEBPACK_IMPORTED_MODULE_1__["GoogleMap"], _angular_common__WEBPACK_IMPORTED_MODULE_3__["NgForOf"], _angular_material_radio__WEBPACK_IMPORTED_MODULE_4__["MatRadioGroup"], _angular_material_radio__WEBPACK_IMPORTED_MODULE_4__["MatRadioButton"], _angular_material_dialog__WEBPACK_IMPORTED_MODULE_2__["MatDialogActions"], _angular_material_button__WEBPACK_IMPORTED_MODULE_5__["MatButton"], _angular_material_dialog__WEBPACK_IMPORTED_MODULE_2__["MatDialogClose"], _angular_google_maps__WEBPACK_IMPORTED_MODULE_1__["MapMarker"]], styles: [".map-container{\r\n    width: 70% !important;\r\n    height: 100%;\r\n    margin-top: 10px;\r\n}\r\n\r\n.googleMap[_ngcontent-%COMP%]{\r\n    display: flex;\r\n    flex-direction: row;\r\n}\r\n\r\n#indicators[_ngcontent-%COMP%]{\r\n    overflow-y: scroll;\r\n    max-height: 500px;\r\n}\r\n\r\n.tavelModeSwitch[_ngcontent-%COMP%]{\r\n    display: flex;\r\n    flex-direction: row;\r\n    justify-content: center;\r\n    align-items: center;\r\n}\r\n\r\n.drivingOption[_ngcontent-%COMP%]{\r\n    margin-right: 10px;\r\n}\r\n\r\n.bicyclingOption[_ngcontent-%COMP%]{\r\n    margin-right: 10px;\r\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImdvb2dsZS1tYXAtZGlhbG9nLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7SUFDSSxxQkFBcUI7SUFDckIsWUFBWTtJQUNaLGdCQUFnQjtBQUNwQjs7QUFFQTtJQUNJLGFBQWE7SUFDYixtQkFBbUI7QUFDdkI7O0FBRUE7SUFDSSxrQkFBa0I7SUFDbEIsaUJBQWlCO0FBQ3JCOztBQUVBO0lBQ0ksYUFBYTtJQUNiLG1CQUFtQjtJQUNuQix1QkFBdUI7SUFDdkIsbUJBQW1CO0FBQ3ZCOztBQUVBO0lBQ0ksa0JBQWtCO0FBQ3RCOztBQUVBO0lBQ0ksa0JBQWtCO0FBQ3RCIiwiZmlsZSI6Imdvb2dsZS1tYXAtZGlhbG9nLmNvbXBvbmVudC5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyI6Om5nLWRlZXAgLm1hcC1jb250YWluZXJ7XHJcbiAgICB3aWR0aDogNzAlICFpbXBvcnRhbnQ7XHJcbiAgICBoZWlnaHQ6IDEwMCU7XHJcbiAgICBtYXJnaW4tdG9wOiAxMHB4O1xyXG59XHJcblxyXG4uZ29vZ2xlTWFwe1xyXG4gICAgZGlzcGxheTogZmxleDtcclxuICAgIGZsZXgtZGlyZWN0aW9uOiByb3c7XHJcbn1cclxuXHJcbiNpbmRpY2F0b3Jze1xyXG4gICAgb3ZlcmZsb3cteTogc2Nyb2xsO1xyXG4gICAgbWF4LWhlaWdodDogNTAwcHg7XHJcbn1cclxuXHJcbi50YXZlbE1vZGVTd2l0Y2h7XHJcbiAgICBkaXNwbGF5OiBmbGV4O1xyXG4gICAgZmxleC1kaXJlY3Rpb246IHJvdztcclxuICAgIGp1c3RpZnktY29udGVudDogY2VudGVyO1xyXG4gICAgYWxpZ24taXRlbXM6IGNlbnRlcjtcclxufVxyXG5cclxuLmRyaXZpbmdPcHRpb257XHJcbiAgICBtYXJnaW4tcmlnaHQ6IDEwcHg7XHJcbn1cclxuXHJcbi5iaWN5Y2xpbmdPcHRpb257XHJcbiAgICBtYXJnaW4tcmlnaHQ6IDEwcHg7XHJcbn0iXX0= */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](GoogleMapDialogComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
