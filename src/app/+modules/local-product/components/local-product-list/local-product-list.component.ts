@@ -101,7 +101,7 @@ export class LocalProductListComponent implements OnInit {
     }
 
     this.mapSidebarService.isLoadingLogo$.subscribe(data => {
-      this.isLoading = true; 
+      this.isLoading = true;
     })
   }
 
@@ -204,12 +204,12 @@ export class LocalProductListComponent implements OnInit {
       const filterFormLocal = [shoppingValue];
       localStorage.setItem('filterFormLocal', JSON.stringify(filterFormLocal));
     }
-  setTimeout(() => {
-    //THE PROBLEM TO OBTAIN THE DISTANCES ON SEARCH BY TERM!!!!!!!!
-    if (this.sortBy === 'location') {
-      this.obtainLocation();
-    }
-  }, 2000);
+    setTimeout(() => {
+      //THE PROBLEM TO OBTAIN THE DISTANCES ON SEARCH BY TERM!!!!!!!!
+      if (this.sortBy === 'location') {
+        this.obtainLocation();
+      }
+    }, 2000);
     this.paginator.firstPage();
   }
 
@@ -327,10 +327,10 @@ export class LocalProductListComponent implements OnInit {
   }
 
   openMapDialog(coordinates: any, item: any): void {
-    let final;
+    let shopChoosen;
     this.originalData.map((shop) => {
       if (shop.attributes.NOMBRE === item.NOMBRE) {
-        final = shop;
+        shopChoosen = shop;
       }
     }
     );
@@ -339,8 +339,8 @@ export class LocalProductListComponent implements OnInit {
       data: {
         dataKey: coordinates,
         shop: {
-          latitude: final.geometry.latitude,
-          longitude: final.geometry.longitude
+          latitude: shopChoosen.geometry.latitude,
+          longitude: shopChoosen.geometry.longitude
         }
       }
       //TO PHONE SCREEN:

@@ -366,7 +366,7 @@ export class MapComponent implements OnInit, OnDestroy {
           });
           features.symbol = Sym;
           const graphs = this.view.graphics.items;
-          const graphicsToDelete = graphs.filter(graph => graph.symbol.size !== 12);
+          const graphicsToDelete = graphs.filter(graph => graph.symbol?.size !== 12);
           graphicsToDelete.forEach(item => {
             this.view.graphics.remove(item);
           });
